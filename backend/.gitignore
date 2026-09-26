@@ -1,0 +1,29 @@
+# TOM Backend
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Maven
+.mvn/
+!.mvn/wrapper/maven-wrapper.properties
+
+# Docker volumes (local)
+docker/data/
+
+# Credentials — NEVER commit secrets
+application-prod.yml
+*.env
+.env
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    @apply bg-surface-0 text-white font-sans;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { @apply bg-surface-1; }
+  ::-webkit-scrollbar-thumb { @apply bg-surface-4 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-brand-700; }
+}
+
+@layer components {
+  /* Sidebar nav item */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-2 text-sm font-medium text-zinc-400
+           border-l-[3px] border-transparent cursor-pointer transition-all duration-150
+           hover:text-white hover:bg-white/5 no-underline;
+  }
+  .nav-item.active {
+    @apply text-brand-400 bg-brand-500/10 border-l-brand-500;
+  }
+
+  /* Card */
+  .tom-card {
+    @apply bg-surface-2/80 border border-white/[0.07] rounded-2xl backdrop-blur-md;
+  }
+
+  /* Input */
+  .tom-input {
+    @apply w-full bg-surface-2 border border-white/10 rounded-xl text-white text-sm
+           px-4 py-2.5 outline-none transition-all duration-150 placeholder-zinc-600
+           focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20;
+  }
+
+  /* Select */
+  .tom-select {
+    @apply w-full bg-surface-2 border border-white/10 rounded-xl text-white text-sm
+           px-4 py-2.5 outline-none transition-all duration-150
+           focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 cursor-pointer;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
+           bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-brand
+           hover:shadow-brand-lg hover:-translate-y-px transition-all duration-200 cursor-pointer;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
+           bg-surface-3 text-zinc-300 border border-white/10
+           hover:bg-surface-4 hover:text-white transition-all duration-150 cursor-pointer;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
+           bg-red-500/10 text-red-400 border border-red-500/20
+           hover:bg-red-500 hover:text-white transition-all duration-150 cursor-pointer;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+           text-zinc-400 hover:text-white hover:bg-white/5 transition-all duration-150 cursor-pointer;
+  }
+
+  /* Badges */
+  .badge { @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold; }
+  .badge-success { @apply bg-emerald-500/15 text-emerald-400; }
+  .badge-warning { @apply bg-amber-500/15 text-amber-400; }
+  .badge-danger  { @apply bg-red-500/15 text-red-400; }
+  .badge-info    { @apply bg-blue-500/15 text-blue-400; }
+  .badge-muted   { @apply bg-surface-3 text-zinc-400; }
+
+  /* Table */
+  .tom-table { @apply w-full text-sm; }
+  .tom-table thead { @apply bg-surface-2 border-b border-white/[0.07]; }
+  .tom-table th {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-zinc-500
+           whitespace-nowrap;
+  }
+  .tom-table td { @apply px-4 py-3 border-b border-white/[0.05] text-zinc-300 align-middle; }
+  .tom-table tbody tr:last-child td { @apply border-b-0; }
+  .tom-table tbody tr { @apply transition-colors hover:bg-white/[0.03]; }
+
+  /* Page header */
+  .page-title { @apply font-display text-2xl font-extrabold text-white; }
+  .page-sub   { @apply text-sm text-zinc-500 mt-0.5; }
+
+  /* KPI card */
+  .kpi-card {
+    @apply tom-card p-5 relative overflow-hidden transition-all duration-200
+           hover:-translate-y-0.5 hover:shadow-lg cursor-default;
+  }
+}
