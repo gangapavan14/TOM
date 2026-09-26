@@ -20,9 +20,9 @@ import ReportsPage from './pages/reports/ReportsPage'
 import AuditPage from './pages/audit/AuditPage'
 import SettingsPage from './pages/settings/SettingsPage'
 
-function LayoutRoute({ children, permission }) {
+function LayoutRoute({ children, allowedRoles, permission }) {
   return (
-    <ProtectedRoute requiredPermission={permission}>
+    <ProtectedRoute allowedRoles={allowedRoles} requiredPermission={permission}>
       <AppLayout>{children}</AppLayout>
     </ProtectedRoute>
   )
@@ -45,118 +45,131 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
+          {/* Overview Dashboard — Admin & Office */}
           <Route
             path="/admin/dashboard"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE']}>
                 <Dashboard />
               </LayoutRoute>
             }
           />
 
+          {/* Operations: Procurement — Admin, Office, Field Officer */}
           <Route
             path="/procurement"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER']}>
                 <ProcurementPage />
               </LayoutRoute>
             }
           />
 
+          {/* Operations: Quality Lab — Admin, Field Officer, Plant Supervisor */}
           <Route
             path="/quality"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'FIELD_OFFICER', 'SENIOR_WORKER']}>
                 <QualityPage />
               </LayoutRoute>
             }
           />
 
+          {/* Operations: Processing & Expellers — Admin, Senior Worker, Worker */}
           <Route
             path="/processing"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'SENIOR_WORKER', 'WORKER']}>
                 <ProcessingPage />
               </LayoutRoute>
             }
           />
 
+          {/* Operations: Inventory & Godowns — Admin, Office, Field Officer, Supervisor, Sales */}
           <Route
             path="/inventory"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SENIOR_WORKER', 'SALES']}>
                 <InventoryPage />
               </LayoutRoute>
             }
           />
 
+          {/* Operations: Logistics & Weighbridge — Admin, Office, Field Officer, Supervisor */}
           <Route
             path="/logistics"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SENIOR_WORKER']}>
                 <LogisticsPage />
               </LayoutRoute>
             }
           />
 
+          {/* Sales & Finance: B2B Sales — Admin, Office, Sales Executive */}
           <Route
             path="/sales"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE', 'SALES']}>
                 <SalesPage />
               </LayoutRoute>
             }
           />
 
+          {/* Sales & Finance: Finance & Bank Accounts — Strictly Admin & Office Accountant */}
           <Route
             path="/finance"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE']}>
                 <FinancePage />
               </LayoutRoute>
             }
           />
 
+          {/* People: Workforce Management — Admin & Office */}
           <Route
             path="/workforce"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE']}>
                 <WorkforcePage />
               </LayoutRoute>
             }
           />
 
+          {/* People: Payroll & Salary Disbursement — Confidential: Strictly Admin */}
           <Route
             path="/payroll"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN']}>
                 <PayrollPage />
               </LayoutRoute>
             }
           />
 
+          {/* System: BI Reports & P&L — Admin & Office */}
           <Route
             path="/reports"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE']}>
                 <ReportsPage />
               </LayoutRoute>
             }
           />
 
+          {/* System: Tamper-Evident Audit Trail — Strictly Admin */}
           <Route
             path="/audit"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN']}>
                 <AuditPage />
               </LayoutRoute>
             }
           />
 
+          {/* System: Enterprise Settings & Hardware Sensors — Strictly Admin */}
           <Route
             path="/settings"
             element={
-              <LayoutRoute>
+              <LayoutRoute allowedRoles={['ADMIN']}>
                 <SettingsPage />
               </LayoutRoute>
             }

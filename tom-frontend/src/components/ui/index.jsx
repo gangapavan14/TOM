@@ -74,8 +74,9 @@ export function Avatar({ name = '', size = 'md' }) {
   )
 }
 
-export function Modal({ open, onClose, title, children, footer }) {
-  if (!open) return null
+export function Modal({ open, isOpen, onClose, title, children, footer }) {
+  const visible = open ?? isOpen
+  if (!visible) return null
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-surface-1 border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"

@@ -19,7 +19,26 @@ const productionBreakdown = [
   { commodity: 'Sunflower Cake', productionTons: 210, revenueLakhs: 73 },
 ]
 
+import toast from 'react-hot-toast'
+
 export default function ReportsPage() {
+  const handleExport = () => {
+    const csvContent = 'data:text/csv;charset=utf-8,' +
+      'Month,Gross Revenue (Lakhs),Net Profit (Lakhs)\n' +
+      monthlyRevenueData.map(e => `${e.month},${e.revenue},${e.profit}`).join('\n') +
+      '\n\nCommodity,Production (Tons),Revenue (Lakhs)\n' +
+      productionBreakdown.map(e => `"${e.commodity}",${e.productionTons},${e.revenueLakhs}`).join('\n')
+
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', `TOM_Master_Analytics_${new Date().toISOString().slice(0, 10)}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    toast.success('Master Executive Analytics exported to CSV')
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
@@ -27,7 +46,7 @@ export default function ReportsPage() {
           <h1 className="page-title">Executive Reports & BI Analytics</h1>
           <p className="page-sub">Crushing yields, product margins, P&L statements and revenue breakdown</p>
         </div>
-        <button className="btn-secondary">
+        <button onClick={handleExport} className="btn-secondary">
           <Download size={16} /> Export Master Excel
         </button>
       </div>
