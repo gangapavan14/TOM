@@ -7,30 +7,33 @@ const api = axios.create({
 
 // Attach token to every request
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('tom_token')
+  const token = localStorage.getItem('tom_token') || localStorage.getItem('tom_access_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
-// Handle 401 — try refresh then redirect
+// Handle 401 — try refresh without destructive page reload loops
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const original = err.config
-    if (err.response?.status === 401 && !original._retry) {
+    if (err.response?.status === 401 && !original?._retry) {
       original._retry = true
-      try {
-        const refreshToken = localStorage.getItem('tom_refresh')
-        const { data } = await axios.post('/api/auth/refresh', { refreshToken })
-        if (data.success) {
-          localStorage.setItem('tom_token', data.data.accessToken)
-          localStorage.setItem('tom_refresh', data.data.refreshToken)
-          original.headers.Authorization = `Bearer ${data.data.accessToken}`
-          return api(original)
+      const refreshToken = localStorage.getItem('tom_refresh')
+      if (refreshToken) {
+        try {
+          const { data } = await axios.post('/api/auth/refresh', { refreshToken })
+          if (data?.success && data?.data?.accessToken) {
+            localStorage.setItem('tom_token', data.data.accessToken)
+            localStorage.setItem('tom_access_token', data.data.accessToken)
+            localStorage.setItem('tom_refresh', data.data.refreshToken)
+            original.headers.Authorization = `Bearer ${data.data.accessToken}`
+            return api(original)
+          }
+        } catch (_) {
+          // Token refresh failed silently; let caller handle fallback data
         }
-      } catch (_) {}
-      localStorage.clear()
-      window.location.href = '/login'
+      }
     }
     return Promise.reject(err)
   }

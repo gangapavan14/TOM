@@ -103,8 +103,18 @@ export function AuthProvider({ children }) {
       // Auto-initialize as standard ADMIN if no previous session
       const defaultAdmin = ROLE_PRESETS.ADMIN
       localStorage.setItem('tom_token', 'dev-session-token')
+      localStorage.setItem('tom_access_token', 'dev-session-token')
       localStorage.setItem('tom_user', JSON.stringify(defaultAdmin))
       setUser(defaultAdmin)
+      authApi.login('admin', 'Admin@123')
+        .then(res => {
+          if (res.data?.success && res.data?.data?.accessToken) {
+            localStorage.setItem('tom_token', res.data.data.accessToken)
+            localStorage.setItem('tom_access_token', res.data.data.accessToken)
+            localStorage.setItem('tom_refresh', res.data.data.refreshToken)
+          }
+        })
+        .catch(() => {})
     }
     setLoading(false)
   }, [])
@@ -113,8 +123,9 @@ export function AuthProvider({ children }) {
     const { data } = await authApi.login(username, password)
     if (!data.success) throw new Error(data.message || 'Login failed')
     const u = data.data
-    localStorage.setItem('tom_token',   u.accessToken)
-    localStorage.setItem('tom_refresh', u.refreshToken)
+    localStorage.setItem('tom_token',        u.accessToken)
+    localStorage.setItem('tom_access_token', u.accessToken)
+    localStorage.setItem('tom_refresh',      u.refreshToken)
     const userData = {
       id: u.userId, username: u.username, fullName: u.fullName,
       role: u.role, permissions: u.permissions || [],
@@ -127,8 +138,24 @@ export function AuthProvider({ children }) {
   const switchRole = useCallback((roleName) => {
     const preset = ROLE_PRESETS[roleName] || ROLE_PRESETS.ADMIN
     localStorage.setItem('tom_user', JSON.stringify(preset))
-    localStorage.setItem('tom_token', `token-${roleName.toLowerCase()}`)
+    const syntheticToken = `token-${roleName.toLowerCase()}`
+    localStorage.setItem('tom_token', syntheticToken)
+    localStorage.setItem('tom_access_token', syntheticToken)
     setUser(preset)
+
+    // If switching to admin, automatically obtain live JWT token in background
+    if (roleName === 'ADMIN') {
+      authApi.login('admin', 'Admin@123')
+        .then(res => {
+          if (res.data?.success && res.data?.data?.accessToken) {
+            localStorage.setItem('tom_token', res.data.data.accessToken)
+            localStorage.setItem('tom_access_token', res.data.data.accessToken)
+            localStorage.setItem('tom_refresh', res.data.data.refreshToken)
+          }
+        })
+        .catch(() => {})
+    }
+
     return ROLE_DASH[roleName] || '/admin/dashboard'
   }, [])
 

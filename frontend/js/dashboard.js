@@ -7,7 +7,10 @@
 Auth.requireAuth();
 if (!Auth.hasRole('ADMIN')) {
   const session = Auth.getSession();
-  window.location.href = Auth.getDashboardUrl(session?.role);
+  const target = Auth.getDashboardUrl(session?.role);
+  if (target && !window.location.pathname.endsWith(target)) {
+    window.location.href = target;
+  }
 }
 
 // Render user info in topbar
