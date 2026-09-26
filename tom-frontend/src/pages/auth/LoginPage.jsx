@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { Spinner } from '../../components/ui'
@@ -12,12 +12,18 @@ const features = [
 ]
 
 export default function LoginPage() {
-  const { login } = useAuth()
+  const { user, login } = useAuth()
   const navigate = useNavigate()
   const [form, setForm]       = useState({ username: '', password: '' })
   const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
   const [showPw, setShowPw]   = useState(false)
+
+  useEffect(() => {
+    if (user) {
+      navigate('/admin/dashboard', { replace: true })
+    }
+  }, [user, navigate])
 
   const handle = async (e) => {
     e.preventDefault()
