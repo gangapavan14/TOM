@@ -19,6 +19,8 @@ import PayrollPage from './pages/payroll/PayrollPage'
 import ReportsPage from './pages/reports/ReportsPage'
 import AuditPage from './pages/audit/AuditPage'
 import SettingsPage from './pages/settings/SettingsPage'
+import B2CCataloguePage from './pages/catalogue/B2CCataloguePage'
+import DocumentsPage from './pages/documents/DocumentsPage'
 
 function LayoutRoute({ children, allowedRoles, permission }) {
   return (
@@ -45,11 +47,11 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Overview Dashboard — Admin & Office */}
+          {/* Role-Aware Dashboard — Tailored for Admin, Office, Field Officer, Senior Worker, Sales */}
           <Route
             path="/admin/dashboard"
             element={
-              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE']}>
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SENIOR_WORKER', 'WORKER', 'SALES']}>
                 <Dashboard />
               </LayoutRoute>
             }
@@ -115,6 +117,16 @@ export default function App() {
             }
           />
 
+          {/* B2C Product Showcase / Catalogue — All Mill Staff & Sales */}
+          <Route
+            path="/catalogue"
+            element={
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE', 'SALES', 'FIELD_OFFICER', 'SENIOR_WORKER', 'WORKER']}>
+                <B2CCataloguePage />
+              </LayoutRoute>
+            }
+          />
+
           {/* Sales & Finance: Finance & Bank Accounts — Strictly Admin & Office Accountant */}
           <Route
             path="/finance"
@@ -161,6 +173,16 @@ export default function App() {
             element={
               <LayoutRoute allowedRoles={['ADMIN']}>
                 <AuditPage />
+              </LayoutRoute>
+            }
+          />
+
+          {/* System: Central Document Repository — Section 15 */}
+          <Route
+            path="/documents"
+            element={
+              <LayoutRoute allowedRoles={['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SALES']}>
+                <DocumentsPage />
               </LayoutRoute>
             }
           />

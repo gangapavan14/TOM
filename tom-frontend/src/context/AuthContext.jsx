@@ -63,11 +63,11 @@ export const ROLE_PRESETS = {
 const ROLE_DASH = {
   ADMIN:           '/admin/dashboard',
   OFFICE_EMPLOYEE: '/admin/dashboard',
-  FIELD_OFFICER:   '/procurement',
-  SENIOR_WORKER:   '/processing',
-  WORKER:          '/processing',
-  TEMP_WORKER:     '/workforce',
-  SALES:           '/sales',
+  FIELD_OFFICER:   '/admin/dashboard',
+  SENIOR_WORKER:   '/admin/dashboard',
+  WORKER:          '/admin/dashboard',
+  TEMP_WORKER:     '/admin/dashboard',
+  SALES:           '/admin/dashboard',
 }
 
 export function AuthProvider({ children }) {

@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { Avatar } from '../ui'
 import {
-  LayoutDashboard, Package, CheckSquare, Settings2, Truck, ShoppingCart,
+  LayoutDashboard, Package, CheckSquare, Settings2, Truck, ShoppingCart, ShoppingBag,
   CreditCard, Users, FileText, BarChart3, ClipboardList, LogOut,
   Bell, Menu, X, ChevronRight, Shield, ShieldCheck, UserCheck, AlertCircle
 } from 'lucide-react'
@@ -13,7 +13,7 @@ const navSections = [
   {
     label: 'Overview',
     items: [
-      { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard', allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE'] },
+      { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     ],
   },
   {
@@ -27,10 +27,11 @@ const navSections = [
     ],
   },
   {
-    label: 'Sales & Finance',
+    label: 'Sales & Commerce',
     items: [
-      { to: '/sales',    icon: ShoppingCart, label: 'B2B Sales', allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'SALES'] },
-      { to: '/finance',  icon: CreditCard,   label: 'Finance',   allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE'] },
+      { to: '/sales',     icon: ShoppingCart, label: 'B2B Sales',     allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'SALES'] },
+      { to: '/catalogue', icon: ShoppingBag,  label: 'B2C Showcase',  allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'SALES', 'FIELD_OFFICER', 'SENIOR_WORKER'] },
+      { to: '/finance',   icon: CreditCard,   label: 'Finance',       allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE'] },
     ],
   },
   {
@@ -43,9 +44,10 @@ const navSections = [
   {
     label: 'System & Governance',
     items: [
-      { to: '/reports',  icon: BarChart3, label: 'Reports',   allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE'] },
-      { to: '/audit',    icon: Shield,    label: 'Audit Log', allowedRoles: ['ADMIN'] },
-      { to: '/settings', icon: Settings2, label: 'Settings',  allowedRoles: ['ADMIN'] },
+      { to: '/documents', icon: FileText,  label: 'Documents', allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SALES'] },
+      { to: '/reports',   icon: BarChart3, label: 'Reports',   allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE'] },
+      { to: '/audit',     icon: Shield,    label: 'Audit Log', allowedRoles: ['ADMIN'] },
+      { to: '/settings',  icon: Settings2, label: 'Settings',  allowedRoles: ['ADMIN'] },
     ],
   },
 ]
@@ -62,6 +64,13 @@ export default function AppLayout({ children }) {
   const { user, logout, switchRole } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [roleModalOpen, setRoleModalOpen] = useState(false)
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'Procurement Reservation Expiring', desc: '1,000 kg Maize reservation for Sri Rama Agros expires in 42 minutes (12-hr rule).', time: '10m ago', unread: true, type: 'warning' },
+    { id: 2, title: 'Pending Customer Pickup Verification', desc: 'Heritage Foods truck AP 21 TY 4521 loading complete. Field Officer signoff required.', time: '25m ago', unread: true, type: 'info' },
+    { id: 3, title: 'Sales Cash Handover Waiting', desc: 'Suresh Kumar collected ₹45,000 cash from Tirupati Refineries. Admin count verification needed.', time: '1h ago', unread: true, type: 'warning' },
+    { id: 4, title: 'Supplier Payment Due (Prompt Discount)', desc: 'Sri Rama Agros ₹1,80,000 eligible for 2% prompt payment discount if settled today.', time: '2h ago', unread: false, type: 'brand' },
+  ])
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -210,10 +219,66 @@ export default function AppLayout({ children }) {
               <span>Test Role</span>
             </button>
 
-            <button className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-surface-2 border border-white/10 text-zinc-400 hover:text-white transition-colors">
-              <Bell size={16} />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">3</span>
-            </button>
+            {/* Notification Bell & Dropdown (Section 16) */}
+            <div className="relative">
+              <button
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
+                className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-surface-2 border border-white/10 text-zinc-400 hover:text-white transition-colors"
+                title="Operational Notifications (Section 16)"
+              >
+                <Bell size={16} />
+                {notifications.filter(n => n.unread).length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center shadow">
+                    {notifications.filter(n => n.unread).length}
+                  </span>
+                )}
+              </button>
+
+              {notificationsOpen && (
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-surface-1 border border-white/10 shadow-2xl z-50 overflow-hidden animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-surface-2/60">
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs font-bold text-white uppercase tracking-wider">Operational Alerts</p>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">Section 16</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setNotifications(notifications.map(n => ({ ...n, unread: false })))
+                        toast.success('All alerts marked as read')
+                      }}
+                      className="text-[11px] text-zinc-400 hover:text-white transition-colors"
+                    >
+                      Mark all read
+                    </button>
+                  </div>
+
+                  <div className="divide-y divide-white/[0.05] max-h-80 overflow-y-auto">
+                    {notifications.map(n => (
+                      <div
+                        key={n.id}
+                        className={`p-3.5 hover:bg-white/[0.02] transition-colors cursor-pointer ${n.unread ? 'bg-amber-500/[0.03]' : ''}`}
+                        onClick={() => {
+                          setNotifications(notifications.map(item => item.id === n.id ? { ...item, unread: false } : item))
+                          setNotificationsOpen(false)
+                        }}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <p className={`text-xs font-semibold ${n.unread ? 'text-amber-400' : 'text-zinc-300'}`}>
+                            {n.title}
+                          </p>
+                          <span className="text-[10px] text-zinc-500 whitespace-nowrap">{n.time}</span>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 mt-1 leading-snug">{n.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="p-2.5 bg-surface-2/40 border-t border-white/[0.08] text-center">
+                    <p className="text-[10px] text-zinc-500">Automated event listeners for 12h expiry & delivery deadlines</p>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div
               onClick={() => setRoleModalOpen(true)}
