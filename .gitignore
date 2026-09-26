@@ -1,0 +1,29 @@
+# Build outputs
+target/
+dist/
+build/
+*.class
+*.jar
+*.war
+
+# Dependencies
+node_modules/
+backend/target/
+tom-frontend/dist/
+tom-frontend/node_modules/
+
+# Environment files
+.env
+.env.local
+*.log
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.iml
+*.swp
+Thumbs.db
+.DS_Store
+
+# Tooling repository
+gstack-repo/
