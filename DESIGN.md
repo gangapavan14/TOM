@@ -1,16 +1,18 @@
 ---
 # gstack: design-md-format=spec
 name: Tirumala Oil Mill (TOM)
-description: High-contrast monochrome enterprise industrial ERP with universal Inter typography, directly derived from the official circular TOM seal
+description: Pristine minimalist light enterprise console with universal Inter typography, inspired by modern AI developer consoles (Vikky Console)
 colors:
-  primary: "#ffffff"
-  on-primary: "#09090b"
-  surface: "#121215"
-  surface-elevated: "#18181b"
-  background: "#09090b"
-  text: "#fafafa"
-  text-muted: "#a1a1aa"
-  accent: "#e4e4e7"
+  primary: "#09090b"
+  on-primary: "#ffffff"
+  surface: "#ffffff"
+  surface-elevated: "#fafafa"
+  surface-sidebar: "#fafafa"
+  background: "#fbfbfb"
+  text: "#09090b"
+  text-muted: "#71717a"
+  border: "#e4e4e7"
+  accent: "#18181b"
   success: "#10b981"
   warning: "#f59e0b"
   error: "#ef4444"
@@ -27,15 +29,16 @@ typography:
   label:
     fontFamily: Inter, sans-serif
     fontSize: 0.75rem
-    letterSpacing: 0.05em
+    letterSpacing: 0.04em
     fontWeight: 600
   mono:
     fontFamily: Inter, monospace
     fontFeature: tnum, zero
 rounded:
   sm: 6px
-  md: 10px
-  lg: 16px
+  md: 8px
+  lg: 12px
+  xl: 16px
   full: 9999px
 spacing:
   xs: 4px
@@ -48,14 +51,16 @@ components:
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.md}"
   button-primary-hover:
-    backgroundColor: "#e4e4e7"
+    backgroundColor: "#18181b"
   input:
-    borderColor: "rgba(255, 255, 255, 0.1)"
-    rounded: "{rounded.sm}"
+    borderColor: "{colors.border}"
+    rounded: "{rounded.md}"
+    backgroundColor: "#ffffff"
   card:
     backgroundColor: "{colors.surface}"
+    borderColor: "{colors.border}"
     rounded: "{rounded.lg}"
   nav-link:
     textColor: "{colors.text}"
@@ -65,47 +70,44 @@ components:
 
 ## Overview
 
-**Creative North Star:** High-Contrast Monochrome Enterprise — deep obsidian black canvas with stark white accents, hairline zinc borders, and refined typographic precision directly mirroring the official circular black-and-white **TOM** seal.
+**Creative North Star:** Pristine Minimalist Light Console — crisp white canvas (`#fbfbfb` / `#ffffff`), refined light sidebar (`#fafafa` with hairline `#e4e4e7` division), soft pill tabs (`bg-zinc-100 border border-zinc-200`), deep black typography (`#09090b`), and clean black primary buttons, directly modeled after modern developer consoles (Vikky Console).
 
-**Product Context:** Tirumala Oil Mill (TOM) Business Management System — a full-scale operational ERP coordinating farmers, commission agents, lab technicians, expeller operators, warehouse keepers, and B2B wholesale buyers.
+**Product Context:** Tirumala Oil Mill (TOM) Business Management System — full-scale operational ERP coordinating farmers, commission agents, lab technicians, expeller operators, warehouse keepers, and B2B wholesale buyers.
 
 **Brand Identity & Logo:**
-- **Central Mark:** Geometric bold monogram `TOM` enclosed in a dynamic circular boundary framed by an organic wheat/seed crop stalk on the right quadrant.
-- **Brand Palette:** Pure Black & Crisp White high-contrast circular seal.
-- **Brand Subtitle:** `TIRUMALA OIL MILL` in tracked, modern geometric sans-serif capitals.
+- **Central Mark:** Official circular `TOM` grain-stalk seal housed in a sleek rounded-lg dark emblem box (`w-9 h-9 rounded-lg bg-zinc-950 p-1.5`).
+- **Brand Subtitle:** `Console` or `TIRUMALA OIL MILL` in tracked, modern geometric sans-serif capitals.
 - **Brand Asset Path:** `tom-frontend/public/tom_logo.png` & `frontend/img/logo.png`.
-
-**Mode per Surface:**
-- **Persuade:** Public B2C Showcase Catalogue (`/catalogue`) & Landing. Clean white/obsidian cards, lab quality certification badges, cold-pressed purity showcase.
-- **Operate:** Floor Workspaces (Procurement Yard, Weighbridge, Expeller Control, Inventory Godowns). High data density, instant action buttons, clear visual feedback.
-- **Read:** Central Document Repository (`/documents`), Lab Analysis Reports, Bilateral Credit Deeds. High-contrast typography, crisp tabular numbers.
-- **Experience:** Admin Executive Cockpit (`/admin/dashboard`). Interactive KPI telemetry, inflow curves, real-time approval pipelines.
 
 ---
 
 ## Colors
 
-**Strategy:** High-Contrast Monochrome & Functional Semantics — stark black canvas (`#09090b`), deep zinc structural layers (`#121215` / `#18181b` / `#27272a`), pure white primary action triggers (`#ffffff`), and crisp neutral typography (`#fafafa` / `#a1a1aa`). Color strictly signals domain state:
-- **Obsidian Canvas (`#09090b`):** Pitch black canvas directly echoing the outer tone of the circular logo seal.
-- **Zinc Structural Surfaces (`#121215` / `#18181b` / `#27272a`):** Discrete layers for cards, tables, modal dialogs, and navigation sidebars.
-- **High-Contrast White Primary (`#ffffff`):** Primary action buttons (`bg-white text-zinc-950 hover:bg-zinc-200`), active navigation markers, and verified indicators.
-- **Crop Emerald (`#10b981`):** Passed lab inspections (Grade A+/A), completed dispatches, and healthy mill machinery.
-- **Harvest Amber (`#f59e0b`):** 12-hr reservation timer warnings and pending handovers.
-- **Rejection Crimson (`#ef4444`):** Grade D condition rejection (Section 8.7), price escalations, and machine alerts.
+**Strategy:** Pristine Light UI & Crisp Architectural Density:
+- **Canvas (`#fbfbfb` / `#ffffff`):** Ultra-clean white background for maximum daylight clarity.
+- **Sidebar Surface (`#fafafa`):** Subtle off-white structural panel bounded by a clean `1px` border (`#e4e4e7`).
+- **Cards & Data Panels (`#ffffff`):** Pure white elevated containers with hairline border (`#e4e4e7`) and subtle ambient shadow (`0 1px 3px rgba(0,0,0,0.05)`).
+- **Primary Text (`#09090b`):** High-contrast deep charcoal/black for instant readability.
+- **Secondary & Muted Text (`#71717a` / `#a1a1aa`):** Subdued metadata, field labels, and timestamps.
+- **Primary Action (`#09090b`):** Pure black button with crisp white typography (`bg-zinc-900 text-white hover:bg-black rounded-lg`).
+- **Active Navigation:** Soft light gray rounded pill (`bg-zinc-200/70 text-zinc-950 font-semibold rounded-lg px-3 py-2`).
+- **Semantic Indicators:**
+  - Crop Emerald (`#10b981` / `bg-emerald-50 text-emerald-700 border-emerald-200`): Passed lab inspections, active stock.
+  - Harvest Amber (`#f59e0b` / `bg-amber-50 text-amber-700 border-amber-200`): 12-hr reservation timer warnings & pending handovers.
+  - Rejection Crimson (`#ef4444` / `bg-rose-50 text-rose-700 border-rose-200`): Grade D rejection & critical safety alerts.
 
 ---
 
 ## Typography
 
-The typographic system is universally powered by **Inter** (Rasmus Andersson's variable UI typeface designed for screens):
-
-1. **Universal Font:** `Inter` across all headings, display titles, body copy, controls, and data tables.
-2. **Display & Section Headers:** `Inter` (weights 700 / 800, `letter-spacing: -0.025em`). Bold, authoritative, mirroring the central `TOM` emblem.
-3. **Body & Controls:** `Inter` (weights 400 / 500 / 600, `font-size: 0.875rem`, line-height: 1.5).
-4. **Labels & Metadata:** `Inter` (uppercase, `letter-spacing: 0.05em`, `font-size: 0.75rem`, weight: 600). Directly matching the tracked `TIRUMALA OIL MILL` subtitle.
+The typographic system is universally powered by **Inter**:
+1. **Universal Font:** `Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`.
+2. **Display & Section Headers:** `Inter` (weights 600 / 700 / 800, `letter-spacing: -0.025em`, color `#09090b`).
+3. **Body & Controls:** `Inter` (weights 400 / 500, `font-size: 0.875rem`, color `#09090b` / `#52525b`).
+4. **Labels & Metadata:** `Inter` (uppercase, `letter-spacing: 0.04em`, `font-size: 0.75rem`, weight: 600, color `#71717a`).
 5. **OpenType Features Enabled:**
    - Contextual alternates (`cv02`, `cv03`, `cv04`, `cv11`, `calt`).
-   - Tabular Numbers (`tnum`) and Slashed Zero (`zero`) for all permanent bag IDs (`TUR-260926-001-001`), weighbridge weights (`16,300 kg`), and rupee amounts (`₹1,80,000.00`).
+   - Tabular Numbers (`tnum`) and Slashed Zero (`zero`) for all permanent bag IDs, weighbridge weights, and rupee amounts.
 
 ---
 

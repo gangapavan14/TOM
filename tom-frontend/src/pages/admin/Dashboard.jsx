@@ -131,7 +131,7 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">
+            <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-sans">
               {activeRoleView === 'ADMIN' && 'Admin Executive Cockpit'}
               {activeRoleView === 'FIELD_OFFICER' && 'Field Officer Operations Hub'}
               {activeRoleView === 'SENIOR_WORKER' && 'Plant Floor & Yard Operations'}
@@ -141,7 +141,7 @@ export default function Dashboard() {
             </h1>
             <Badge variant="brand">Section 24</Badge>
           </div>
-          <p className="page-sub text-zinc-400 text-sm mt-1">
+          <p className="page-sub text-zinc-500 text-sm mt-1">
             {today} • Role-tailored operational authority
           </p>
         </div>
@@ -149,16 +149,16 @@ export default function Dashboard() {
         {/* Admin Preview Selector & Status */}
         <div className="flex flex-wrap items-center gap-3">
           {user?.role === 'ADMIN' && (
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-2 border border-white/[0.08] text-xs">
-              <span className="text-[11px] text-zinc-400 px-2 font-medium">Preview Role:</span>
+            <div className="flex items-center gap-1 p-1 rounded-lg bg-zinc-100 border border-zinc-200 text-xs">
+              <span className="text-[11px] text-zinc-500 px-2 font-medium">Preview Role:</span>
               {['ADMIN', 'FIELD_OFFICER', 'SENIOR_WORKER', 'SALES', 'OFFICE_EMPLOYEE'].map(r => (
                 <button
                   key={r}
                   onClick={() => setActiveRoleView(r)}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
                     activeRoleView === r
-                      ? 'bg-brand-600 text-white shadow-sm'
-                      : 'text-zinc-400 hover:text-white'
+                      ? 'bg-white text-zinc-950 shadow-sm border border-zinc-200/80 font-semibold'
+                      : 'text-zinc-600 hover:text-zinc-950'
                   }`}
                 >
                   {r.replace('_', ' ')}
@@ -167,8 +167,8 @@ export default function Dashboard() {
             </div>
           )}
 
-          <span className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full font-medium shadow-sm">
-            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+          <span className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full font-medium shadow-xs">
+            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             Live & Synchronized
           </span>
         </div>
@@ -227,7 +227,7 @@ export default function Dashboard() {
 
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 tom-card">
+            <div className="lg:col-span-2 tom-card bg-white border border-zinc-200 rounded-xl shadow-sm">
               <CardHeader
                 title="📈 Weekly Procurement Rate"
                 subtitle="Raw cotton & sunflower seed receipts (kg/day)"
@@ -237,37 +237,37 @@ export default function Dashboard() {
                   <AreaChart data={procurementTrend}>
                     <defs>
                       <linearGradient id="procGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.0} />
+                        <stop offset="5%" stopColor="#18181b" stopOpacity={0.12} />
+                        <stop offset="95%" stopColor="#18181b" stopOpacity={0.0} />
                       </linearGradient>
                     </defs>
-                    <XAxis dataKey="day" tick={{ fill: '#a1a1aa', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#a1a1aa', fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="day" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ background: '#1c1917', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: 10, color: '#fff', fontSize: 12 }}
-                      cursor={{ stroke: '#f59e0b', strokeWidth: 1.5, strokeDasharray: '4 4' }}
+                      contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 8, color: '#09090b', fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                      cursor={{ stroke: '#71717a', strokeWidth: 1, strokeDasharray: '4 4' }}
                     />
-                    <Area type="monotone" dataKey="kg" stroke="#f59e0b" strokeWidth={2.5} fill="url(#procGrad)" />
+                    <Area type="monotone" dataKey="kg" stroke="#18181b" strokeWidth={2} fill="url(#procGrad)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            <div className="tom-card">
+            <div className="tom-card bg-white border border-zinc-200 rounded-xl shadow-sm">
               <CardHeader
                 title="🏷️ Bag Stock by Grade"
                 subtitle="Current warehouse distribution (Section 8.7)"
               />
               <div className="px-4 py-5">
                 <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={stockByGrade} barSize={32}>
-                    <XAxis dataKey="grade" tick={{ fill: '#a1a1aa', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#a1a1aa', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <BarChart data={stockByGrade} barSize={28}>
+                    <XAxis dataKey="grade" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ background: '#1c1917', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: 10, color: '#fff', fontSize: 12 }}
-                      cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+                      contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 8, color: '#09090b', fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                      cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                     />
-                    <Bar dataKey="bags" fill="#f59e0b" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="bags" fill="#18181b" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -276,29 +276,29 @@ export default function Dashboard() {
 
           {/* Approvals + Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.07]">
+            <Card className="bg-white border border-zinc-200 rounded-xl shadow-sm">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200/80">
                 <div>
-                  <h3 className="font-semibold text-white text-base">✅ Actionable Pending Approvals</h3>
-                  <p className="text-xs text-zinc-400 mt-0.5">Section 2.3: Admin is the supreme financial & employment authority</p>
+                  <h3 className="font-semibold text-zinc-950 text-base">✅ Actionable Pending Approvals</h3>
+                  <p className="text-xs text-zinc-500 mt-0.5">Section 2.3: Admin is the supreme financial & employment authority</p>
                 </div>
                 {approvals.length > 0 && (
                   <span className="badge badge-warning">{approvals.length} pending</span>
                 )}
               </div>
-              <div className="divide-y divide-white/[0.05]">
+              <div className="divide-y divide-zinc-100">
                 {approvals.length === 0 ? (
                   <div className="p-8 text-center text-sm text-zinc-500">
                     🎉 All operational tasks and approvals are up to date!
                   </div>
                 ) : (
                   approvals.map(a => (
-                    <div key={a.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors">
+                    <div key={a.id} className="flex items-center justify-between px-6 py-4 hover:bg-zinc-50/70 transition-colors">
                       <div className="flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-surface-3 flex items-center justify-center text-lg">{a.icon}</span>
+                        <span className="w-9 h-9 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center text-lg">{a.icon}</span>
                         <div>
-                          <p className="text-sm font-semibold text-white">{a.type}</p>
-                          <p className="text-xs text-zinc-400">{a.desc}</p>
+                          <p className="text-sm font-semibold text-zinc-900">{a.type}</p>
+                          <p className="text-xs text-zinc-500">{a.desc}</p>
                         </div>
                       </div>
                       <button
@@ -313,21 +313,21 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-zinc-200 rounded-xl shadow-sm">
               <CardHeader title="🕐 Live Mill Activity Feed" subtitle="Traceable domain events in the last 24 hours" />
-              <div className="divide-y divide-white/[0.05]">
+              <div className="divide-y divide-zinc-100">
                 {[
                   { color: 'bg-amber-500', text: 'Procurement requirement created: Cotton Seed 5,000 kg', time: '2 min ago' },
                   { color: 'bg-emerald-500', text: 'Electronic weighment slip issued: WB-260926-001 (16.3t net)', time: '12 min ago' },
                   { color: 'bg-blue-500', text: 'B2B Order placed: Heritage Foods — 200 bags cake', time: '28 min ago' },
                   { color: 'bg-amber-500', text: 'Expeller #1 runtime reached: 112°C normal operation', time: '35 min ago' },
                   { color: 'bg-emerald-500', text: 'Disbursed September salary advances to 4 operators', time: '1 hr ago' },
-                  { color: 'bg-purple-500', text: 'Quality lab approval: Lot #TUR-001 moisture 7.8% (Passed)', time: '2 hr ago' },
+                  { color: 'bg-indigo-500', text: 'Quality lab approval: Lot #TUR-001 moisture 7.8% (Passed)', time: '2 hr ago' },
                 ].map((a, i) => (
-                  <div key={i} className="flex items-start gap-3 px-6 py-3.5">
-                    <div className={`w-2.5 h-2.5 rounded-full ${a.color} mt-1.5 flex-shrink-0 shadow-sm`} />
+                  <div key={i} className="flex items-start gap-3 px-6 py-3.5 hover:bg-zinc-50/70 transition-colors">
+                    <div className={`w-2 h-2 rounded-full ${a.color} mt-1.5 flex-shrink-0 shadow-xs`} />
                     <div className="flex-1">
-                      <p className="text-sm text-zinc-200">{a.text}</p>
+                      <p className="text-sm text-zinc-800">{a.text}</p>
                       <p className="text-xs text-zinc-400 mt-0.5">{a.time}</p>
                     </div>
                   </div>

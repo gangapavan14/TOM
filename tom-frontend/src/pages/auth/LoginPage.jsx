@@ -44,67 +44,63 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-surface-0">
+    <div className="min-h-screen flex bg-[#fbfbfb]">
 
       {/* ─── Left branding panel ─── */}
-      <div className="hidden lg:flex flex-1 flex-col justify-between px-16 py-14 bg-surface-gradient relative overflow-hidden">
-        {/* Glow */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="hidden lg:flex flex-1 flex-col justify-between px-16 py-14 bg-[#fafafa] border-r border-zinc-200 relative overflow-hidden">
         {/* Brand */}
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-white p-1.5 flex items-center justify-center mb-7 shadow-2xl">
-            <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain" />
+          <div className="w-12 h-12 rounded-xl bg-zinc-950 p-1.5 flex items-center justify-center mb-6 shadow-sm">
+            <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain filter invert" />
           </div>
-          <h1 className="font-sans text-5xl font-extrabold text-white leading-[1.1] mb-3 tracking-tight">
+          <h1 className="font-sans text-4xl font-extrabold text-zinc-950 leading-[1.15] mb-2 tracking-tight">
             Tirumala<br />Oil Mill
           </h1>
-          <p className="text-zinc-400 text-base font-semibold tracking-wide">
-            Business Management System
+          <p className="text-zinc-500 text-sm font-medium tracking-wide">
+            Business Management Console
           </p>
         </div>
 
         {/* Feature cards */}
-        <div className="relative flex flex-col gap-4">
+        <div className="relative flex flex-col gap-3 max-w-md">
           {features.map(f => (
-            <div key={f.title} className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xl flex-shrink-0">
+            <div key={f.title} className="flex items-center gap-3.5 p-3 rounded-xl bg-white border border-zinc-200/80 shadow-xs">
+              <div className="w-10 h-10 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center text-lg flex-shrink-0">
                 {f.icon}
               </div>
               <div>
-                <p className="text-white text-sm font-semibold">{f.title}</p>
-                <p className="text-zinc-400 text-xs">{f.sub}</p>
+                <p className="text-zinc-900 text-sm font-semibold">{f.title}</p>
+                <p className="text-zinc-500 text-xs">{f.sub}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <p className="relative text-zinc-500 text-xs">
+        <p className="relative text-zinc-400 text-xs">
           © 2026 Tirumala Oil Mill. All rights reserved.
         </p>
       </div>
 
       {/* ─── Right login panel ─── */}
-      <div className="w-full lg:w-[480px] flex items-center justify-center px-8 py-12">
-        <div className="w-full max-w-sm">
+      <div className="w-full lg:w-[480px] flex items-center justify-center px-8 py-12 bg-white lg:bg-[#fbfbfb]">
+        <div className="w-full max-w-sm bg-white lg:border lg:border-zinc-200 lg:rounded-2xl lg:p-8 lg:shadow-sm">
 
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md">
-              <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain" />
+          <div className="lg:hidden flex items-center gap-3 mb-8">
+            <div className="w-9 h-9 rounded-lg bg-zinc-950 p-1.5 flex items-center justify-center shadow-sm">
+              <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain filter invert" />
             </div>
             <div>
-              <p className="font-sans font-bold text-white tracking-tight">TOM System</p>
-              <p className="text-zinc-400 text-xs">Tirumala Oil Mill</p>
+              <p className="font-sans font-bold text-zinc-950 tracking-tight text-sm">TOM Console</p>
+              <p className="text-zinc-500 text-xs">Tirumala Oil Mill</p>
             </div>
           </div>
 
-          <h2 className="font-sans text-3xl font-extrabold text-white mb-1 tracking-tight">Welcome back</h2>
-          <p className="text-zinc-400 text-sm mb-8">Sign in to your TOM account</p>
+          <h2 className="font-sans text-2xl font-bold text-zinc-950 mb-1 tracking-tight">Welcome back</h2>
+          <p className="text-zinc-500 text-xs mb-6">Sign in to your TOM management account</p>
 
           {error && (
-            <div className="mb-5 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+            <div className="mb-4 px-3.5 py-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-xs font-medium">
               {error}
             </div>
           )}
@@ -112,9 +108,9 @@ export default function LoginPage() {
           <form onSubmit={handle} className="flex flex-col gap-4">
             {/* Username */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-zinc-400">Username</label>
+              <label className="text-xs font-medium text-zinc-700">Username</label>
               <div className="relative">
-                <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
                 <input
                   type="text"
                   className="tom-input pl-10"
@@ -129,19 +125,19 @@ export default function LoginPage() {
 
             {/* Password */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-zinc-400">Password</label>
+              <label className="text-xs font-medium text-zinc-700">Password</label>
               <div className="relative">
-                <Lock size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
                 <input
                   type={showPw ? 'text' : 'password'}
-                  className="tom-input pl-10 pr-12"
+                  className="tom-input pl-10 pr-10"
                   placeholder="Enter password"
                   value={form.password}
                   onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                   autoComplete="current-password"
                 />
                 <button type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-950 transition-colors"
                   onClick={() => setShowPw(v => !v)}>
                   {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
@@ -149,21 +145,21 @@ export default function LoginPage() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="btn-primary w-full py-3 mt-2 text-base disabled:opacity-50 disabled:cursor-not-allowed">
+              className="btn-primary w-full py-2.5 mt-1 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
               {loading ? <><Spinner size="sm" /> Signing in...</> : 'Sign In'}
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-white/[0.07] text-center text-xs text-zinc-500">
-            Need access? Contact your <span className="text-zinc-300 font-medium">TOM Administrator</span>
+          <div className="mt-6 pt-5 border-t border-zinc-100 text-center text-xs text-zinc-500">
+            Need access? Contact your <span className="text-zinc-800 font-medium">TOM Administrator</span>
           </div>
 
           {/* Dev hint */}
-          <div className="mt-4 px-4 py-3 bg-white/[0.04] border border-white/10 rounded-xl text-center">
-            <p className="text-xs text-zinc-400">
-              🔧 Dev: <code className="text-zinc-200 bg-surface-2 px-1.5 py-0.5 rounded font-mono">admin</code>
+          <div className="mt-4 px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-lg text-center">
+            <p className="text-xs text-zinc-600">
+              🔧 Dev: <code className="text-zinc-900 bg-white border border-zinc-200 px-1.5 py-0.5 rounded font-mono text-[11px]">admin</code>
               {' / '}
-              <code className="text-zinc-200 bg-surface-2 px-1.5 py-0.5 rounded font-mono">Admin@123</code>
+              <code className="text-zinc-900 bg-white border border-zinc-200 px-1.5 py-0.5 rounded font-mono text-[11px]">Admin@123</code>
             </p>
           </div>
 

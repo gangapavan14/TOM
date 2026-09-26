@@ -97,47 +97,47 @@ export default function AppLayout({ children }) {
     .filter(section => section.items.length > 0)
 
   return (
-    <div className="flex min-h-screen bg-surface-0">
+    <div className="flex min-h-screen bg-[#fbfbfb]">
 
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+        <div className="fixed inset-0 bg-black/40 z-40 lg:hidden"
              onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* ===== SIDEBAR ===== */}
       <aside className={`
-        fixed top-0 left-0 h-full w-64 bg-surface-1 border-r border-white/[0.07]
+        fixed top-0 left-0 h-full w-64 bg-[#fafafa] border-r border-zinc-200
         flex flex-col z-50 transition-transform duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
       `}>
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-white/[0.07]">
-          <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md flex-shrink-0">
-            <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain" />
+        {/* Logo — Console Header */}
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-zinc-200">
+          <div className="w-8 h-8 rounded-lg bg-zinc-950 p-1 flex items-center justify-center shadow-sm flex-shrink-0">
+            <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain filter invert" />
           </div>
           <div className="leading-tight flex-1 min-w-0">
-            <p className="font-sans font-bold text-white text-sm tracking-tight">TOM System</p>
-            <p className="text-zinc-400 text-xs truncate">Tirumala Oil Mill</p>
+            <p className="font-sans font-bold text-zinc-950 text-sm tracking-tight">TOM</p>
+            <p className="text-zinc-500 text-xs">Console</p>
           </div>
-          <button className="ml-auto lg:hidden text-zinc-400 hover:text-white"
+          <button className="ml-auto lg:hidden text-zinc-400 hover:text-zinc-950"
                   onClick={() => setSidebarOpen(false)}>
             <X size={18} />
           </button>
         </div>
 
         {/* Role Badge & Quick Switch */}
-        <div className="px-4 py-3 bg-surface-2/60 border-b border-white/[0.05] flex items-center justify-between">
+        <div className="mx-3 mt-3 px-3 py-2 bg-white border border-zinc-200 rounded-lg flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2 min-w-0">
-            <ShieldCheck size={14} className="text-zinc-300 flex-shrink-0" />
+            <ShieldCheck size={14} className="text-zinc-600 flex-shrink-0" />
             <div className="min-w-0">
               <p className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Active Role</p>
-              <p className="text-xs font-bold text-white truncate">{user?.role?.replace('_', ' ')}</p>
+              <p className="text-xs font-bold text-zinc-900 truncate">{user?.role?.replace('_', ' ')}</p>
             </div>
           </div>
           <button
             onClick={() => setRoleModalOpen(true)}
-            className="text-[11px] font-semibold text-zinc-200 hover:text-white px-2 py-0.5 rounded bg-white/10 border border-white/20 transition-colors"
+            className="text-[11px] font-medium text-zinc-700 hover:text-zinc-950 px-2 py-0.5 rounded border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 transition-colors"
             title="Switch role to test security permissions"
           >
             Switch
@@ -145,46 +145,54 @@ export default function AppLayout({ children }) {
         </div>
 
         {/* Nav with strict RBAC filtering */}
-        <nav className="flex-1 overflow-y-auto py-3">
+        <nav className="flex-1 overflow-y-auto px-3 py-3">
           {filteredNavSections.map(section => (
-            <div key={section.label} className="mb-2">
-              <p className="px-5 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">
+            <div key={section.label} className="mb-3">
+              <p className="px-2 py-1 text-[11px] font-semibold text-zinc-400">
                 {section.label}
               </p>
-              {section.items.map(({ to, icon: Icon, label, badge }) => (
-                <NavLink key={to} to={to}
-                  className={({ isActive }) =>
-                    `nav-item ${isActive ? 'active' : ''}`
-                  }
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <Icon size={16} className="flex-shrink-0 opacity-70" />
-                  <span className="flex-1">{label}</span>
-                  {badge != null && (
-                    <span className="ml-auto bg-white text-zinc-950 text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-                      {badge}
-                    </span>
-                  )}
-                </NavLink>
-              ))}
+              <div className="space-y-0.5">
+                {section.items.map(({ to, icon: Icon, label, badge }) => (
+                  <NavLink key={to} to={to}
+                    className={({ isActive }) =>
+                      `nav-item ${isActive ? 'active' : ''}`
+                    }
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <Icon size={16} className="flex-shrink-0 opacity-70" />
+                    <span className="flex-1 truncate">{label}</span>
+                    {badge != null && (
+                      <span className="ml-auto bg-zinc-900 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+                        {badge}
+                      </span>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
             </div>
           ))}
         </nav>
 
-        {/* User + Logout */}
-        <div className="p-4 border-t border-white/[0.07]">
-          <div className="flex items-center gap-3 mb-3">
-            <Avatar name={user?.fullName ?? 'User'} size="sm" />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{user?.fullName}</p>
-              <p className="text-xs text-zinc-400 truncate">@{user?.username}</p>
+        {/* User Account Footer (matching screenshot BS user pill) */}
+        <div className="p-3 border-t border-zinc-200 bg-[#fafafa]">
+          <div
+            onClick={() => setRoleModalOpen(true)}
+            className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-zinc-200/60 transition-colors cursor-pointer"
+          >
+            <div className="w-8 h-8 rounded-full bg-zinc-200 border border-zinc-300 text-zinc-800 font-semibold text-xs flex items-center justify-center flex-shrink-0">
+              {user?.fullName?.split(' ').map(n=>n[0]).join('').slice(0, 2) || 'AD'}
             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-zinc-900 truncate leading-tight">{user?.fullName}</p>
+              <p className="text-[11px] text-zinc-500 truncate">{user?.username ? `${user.username}@tirumalaoil.com` : 'admin@tirumalaoil.com'}</p>
+            </div>
+            <ChevronRight size={14} className="text-zinc-400 flex-shrink-0" />
           </div>
           <button onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium
-                       text-zinc-400 border border-white/10 hover:bg-red-500/10 hover:text-red-400
-                       hover:border-red-500/30 transition-all">
-            <LogOut size={14} />
+            className="w-full mt-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                       text-zinc-600 border border-zinc-200 bg-white hover:bg-red-50 hover:text-red-600
+                       hover:border-red-200 transition-all shadow-sm">
+            <LogOut size={13} />
             Sign Out
           </button>
         </div>
@@ -194,15 +202,15 @@ export default function AppLayout({ children }) {
       <div className="flex-1 flex flex-col lg:ml-64 min-h-screen">
 
         {/* Topbar */}
-        <header className="sticky top-0 z-30 h-16 bg-surface-1/90 backdrop-blur border-b border-white/[0.07] flex items-center px-6 gap-4">
-          <button className="lg:hidden text-zinc-400 hover:text-white transition-colors"
+        <header className="sticky top-0 z-30 h-14 bg-white/90 backdrop-blur border-b border-zinc-200 flex items-center px-6 gap-4">
+          <button className="lg:hidden text-zinc-500 hover:text-zinc-950 transition-colors"
                   onClick={() => setSidebarOpen(true)}>
-            <Menu size={20} />
+            <Menu size={18} />
           </button>
 
-          <div className="flex items-center gap-2 text-xs text-zinc-400">
-            <span className="hidden sm:inline">Permission Level:</span>
-            <span className="font-mono text-zinc-100 font-semibold px-2 py-0.5 rounded bg-white/10 border border-white/20">
+          <div className="flex items-center gap-2 text-xs text-zinc-500">
+            <span className="hidden sm:inline">Permission:</span>
+            <span className="font-mono text-zinc-900 font-medium px-2 py-0.5 rounded bg-zinc-100 border border-zinc-200">
               {user?.role?.replace('_', ' ')}
             </span>
           </div>
@@ -213,9 +221,9 @@ export default function AppLayout({ children }) {
             {/* Quick role test dropdown */}
             <button
               onClick={() => setRoleModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-2 border border-white/10 text-xs font-semibold text-zinc-200 hover:text-white hover:bg-surface-3 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 shadow-sm transition-colors"
             >
-              <UserCheck size={14} className="text-zinc-300" />
+              <UserCheck size={14} className="text-zinc-500" />
               <span>Test Role</span>
             </button>
 
@@ -223,10 +231,10 @@ export default function AppLayout({ children }) {
             <div className="relative">
               <button
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-surface-2 border border-white/10 text-zinc-400 hover:text-white transition-colors"
+                className="relative w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50 shadow-sm transition-colors"
                 title="Operational Notifications (Section 16)"
               >
-                <Bell size={16} />
+                <Bell size={15} />
                 {notifications.filter(n => n.unread).length > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center shadow">
                     {notifications.filter(n => n.unread).length}
@@ -235,45 +243,45 @@ export default function AppLayout({ children }) {
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-surface-1 border border-white/10 shadow-2xl z-50 overflow-hidden animate-fade-in">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-surface-2/60">
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-white border border-zinc-200 shadow-xl z-50 overflow-hidden animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 bg-zinc-50">
                     <div className="flex items-center gap-2">
-                      <p className="text-xs font-bold text-white uppercase tracking-wider">Operational Alerts</p>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">Section 16</span>
+                      <p className="text-xs font-bold text-zinc-950 uppercase tracking-wider">Operational Alerts</p>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-200 text-zinc-800 font-medium">Section 16</span>
                     </div>
                     <button
                       onClick={() => {
                         setNotifications(notifications.map(n => ({ ...n, unread: false })))
                         toast.success('All alerts marked as read')
                       }}
-                      className="text-[11px] text-zinc-400 hover:text-white transition-colors"
+                      className="text-[11px] text-zinc-500 hover:text-zinc-900 transition-colors"
                     >
                       Mark all read
                     </button>
                   </div>
 
-                  <div className="divide-y divide-white/[0.05] max-h-80 overflow-y-auto">
+                  <div className="divide-y divide-zinc-100 max-h-80 overflow-y-auto">
                     {notifications.map(n => (
                       <div
                         key={n.id}
-                        className={`p-3.5 hover:bg-white/[0.02] transition-colors cursor-pointer ${n.unread ? 'bg-amber-500/[0.03]' : ''}`}
+                        className={`p-3.5 hover:bg-zinc-50 transition-colors cursor-pointer ${n.unread ? 'bg-zinc-50/60' : ''}`}
                         onClick={() => {
                           setNotifications(notifications.map(item => item.id === n.id ? { ...item, unread: false } : item))
                           setNotificationsOpen(false)
                         }}
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <p className={`text-xs font-semibold ${n.unread ? 'text-amber-400' : 'text-zinc-300'}`}>
+                          <p className={`text-xs font-semibold ${n.unread ? 'text-zinc-950' : 'text-zinc-700'}`}>
                             {n.title}
                           </p>
-                          <span className="text-[10px] text-zinc-500 whitespace-nowrap">{n.time}</span>
+                          <span className="text-[10px] text-zinc-400 whitespace-nowrap">{n.time}</span>
                         </div>
-                        <p className="text-[11px] text-zinc-400 mt-1 leading-snug">{n.desc}</p>
+                        <p className="text-[11px] text-zinc-500 mt-1 leading-snug">{n.desc}</p>
                       </div>
                     ))}
                   </div>
 
-                  <div className="p-2.5 bg-surface-2/40 border-t border-white/[0.08] text-center">
+                  <div className="p-2.5 bg-zinc-50 border-t border-zinc-200 text-center">
                     <p className="text-[10px] text-zinc-500">Automated event listeners for 12h expiry & delivery deadlines</p>
                   </div>
                 </div>
@@ -282,55 +290,57 @@ export default function AppLayout({ children }) {
 
             <div
               onClick={() => setRoleModalOpen(true)}
-              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-surface-2 border border-white/10 cursor-pointer hover:bg-surface-3 transition-colors"
+              className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-white border border-zinc-200 cursor-pointer hover:bg-zinc-50 shadow-sm transition-colors"
             >
-              <Avatar name={user?.fullName ?? 'U'} size="sm" />
-              <div className="hidden sm:block text-left">
-                <p className="text-sm font-semibold text-white leading-none">{user?.fullName}</p>
-                <p className="text-[11px] text-zinc-500 mt-0.5">{user?.role?.replace('_', ' ')}</p>
+              <div className="w-7 h-7 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 font-semibold text-xs flex items-center justify-center">
+                {user?.fullName?.split(' ').map(n=>n[0]).join('').slice(0, 2) || 'AD'}
               </div>
-              <ChevronRight size={14} className="text-zinc-500" />
+              <div className="hidden sm:block text-left">
+                <p className="text-xs font-semibold text-zinc-900 leading-tight">{user?.fullName}</p>
+                <p className="text-[10px] text-zinc-500">{user?.role?.replace('_', ' ')}</p>
+              </div>
+              <ChevronRight size={13} className="text-zinc-400" />
             </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-6 lg:p-8 bg-[#fbfbfb]">
           {children}
         </main>
       </div>
 
       {/* ===== ROLE TESTING MODAL ===== */}
       {roleModalOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setRoleModalOpen(false)}>
-          <div className="bg-surface-1 border border-white/10 rounded-2xl w-full max-w-lg p-6 space-y-5" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setRoleModalOpen(false)}>
+          <div className="bg-white border border-zinc-200 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-sans font-bold text-white text-lg tracking-tight">Role-Based Security Demo</h3>
-                <p className="text-zinc-400 text-xs mt-1">Switch persona to inspect which menus, sensitive data, and controls are restricted.</p>
+                <h3 className="font-sans font-bold text-zinc-950 text-lg tracking-tight">Role-Based Security Demo</h3>
+                <p className="text-zinc-500 text-xs mt-1">Switch persona to inspect which menus, sensitive data, and controls are restricted.</p>
               </div>
-              <button onClick={() => setRoleModalOpen(false)} className="text-zinc-400 hover:text-white">✕</button>
+              <button onClick={() => setRoleModalOpen(false)} className="text-zinc-400 hover:text-zinc-950">✕</button>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {AVAILABLE_ROLES.map(({ role, label, desc }) => {
                 const isActive = user?.role === role
                 return (
                   <button
                     key={role}
                     onClick={() => handleRoleSwitch(role)}
-                    className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-start justify-between ${
+                    className={`w-full text-left p-3 rounded-xl border transition-all flex items-start justify-between ${
                       isActive
-                        ? 'bg-white/10 border-white/40 text-white shadow-sm'
-                        : 'bg-surface-2 border-white/5 text-zinc-300 hover:bg-surface-3 hover:border-white/10'
+                        ? 'bg-zinc-100 border-zinc-300 text-zinc-950 shadow-sm'
+                        : 'bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300'
                     }`}
                   >
                     <div>
-                      <p className={`font-semibold text-sm ${isActive ? 'text-white font-bold' : 'text-zinc-200'}`}>{label}</p>
-                      <p className="text-xs text-zinc-400 mt-0.5">{desc}</p>
+                      <p className={`font-semibold text-sm ${isActive ? 'text-zinc-950 font-bold' : 'text-zinc-800'}`}>{label}</p>
+                      <p className="text-xs text-zinc-500 mt-0.5">{desc}</p>
                     </div>
                     {isActive && (
-                      <span className="text-xs font-bold text-zinc-950 bg-white px-2 py-0.5 rounded-full">
+                      <span className="text-xs font-semibold text-white bg-zinc-900 px-2 py-0.5 rounded-full">
                         Active
                       </span>
                     )}
@@ -339,8 +349,8 @@ export default function AppLayout({ children }) {
               })}
             </div>
 
-            <div className="p-3 bg-surface-2 rounded-xl text-xs text-zinc-400 flex items-center gap-2">
-              <AlertCircle size={14} className="text-zinc-400 flex-shrink-0" />
+            <div className="p-3 bg-zinc-50 border border-zinc-200 rounded-xl text-xs text-zinc-600 flex items-center gap-2">
+              <AlertCircle size={14} className="text-zinc-500 flex-shrink-0" />
               <span>Restricted modules are stripped from the sidebar and protected by 403 route firewalls.</span>
             </div>
 

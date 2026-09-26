@@ -18,11 +18,11 @@ export default {
           950: '#09090b',
         },
         surface: {
-          0:  '#09090b',
-          1:  '#121215',
-          2:  '#18181b',
-          3:  '#27272a',
-          4:  '#3f3f46',
+          0:  '#fbfbfb',
+          1:  '#fafafa',
+          2:  '#ffffff',
+          3:  '#f4f4f5',
+          4:  '#e4e4e7',
         },
       },
       fontFamily: {
@@ -31,12 +31,12 @@ export default {
         mono: ['Inter', 'monospace'],
       },
       backgroundImage: {
-        'brand-gradient': 'linear-gradient(135deg, #ffffff 0%, #e4e4e7 100%)',
-        'surface-gradient': 'linear-gradient(145deg, #18181b 0%, #09090b 100%)',
+        'brand-gradient': 'linear-gradient(135deg, #18181b 0%, #09090b 100%)',
+        'surface-gradient': 'linear-gradient(180deg, #fafafa 0%, #ffffff 100%)',
       },
       boxShadow: {
-        brand: '0 0 20px rgba(255,255,255,0.15)',
-        'brand-lg': '0 4px 20px rgba(0,0,0,0.6)',
+        card: '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+        'card-hover': '0 4px 12px rgba(0, 0, 0, 0.06)',
       },
     },
   },
