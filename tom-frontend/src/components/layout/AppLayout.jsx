@@ -113,8 +113,8 @@ export default function AppLayout({ children }) {
       `}>
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-white/[0.07]">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 flex items-center justify-center text-lg shadow-brand flex-shrink-0">
-            🌿
+          <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md flex-shrink-0">
+            <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain" />
           </div>
           <div className="leading-tight flex-1 min-w-0">
             <p className="font-display font-bold text-white text-sm">TOM System</p>

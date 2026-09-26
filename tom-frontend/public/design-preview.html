@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tirumala Oil Mill (TOM) — Design System Specification Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0b0d;
+      --bg-surface: #131518;
+      --bg-elevated: #1a1d22;
+      --bg-hover: #22262d;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.15);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-sub: #64748b;
+      --accent: #d97706;
+      --accent-gold: #f59e0b;
+      --accent-glow: rgba(245, 158, 11, 0.12);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      padding: 3rem 1.5rem;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+    
+    header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    .brand-logo-img {
+      width: 76px;
+      height: 76px;
+      border-radius: var(--radius-lg);
+      background: #ffffff;
+      padding: 6px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+    }
+
+    .brand-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    .badge-spec {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--accent-gold);
+      background: var(--accent-glow);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+
+    section { margin-bottom: 3.5rem; }
+    h2 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .grid-swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+    }
+
+    .swatch-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .swatch-color { height: 75px; width: 100%; }
+    .swatch-meta { padding: 0.85rem; }
+    .swatch-name { font-size: 0.85rem; font-weight: 600; color: #fff; }
+    .swatch-hex { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
+
+    .specimen-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .specimen-item { margin-bottom: 1.5rem; }
+    .specimen-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-sub);
+      font-family: var(--font-mono);
+      margin-bottom: 0.5rem;
+    }
+
+    .display-sample {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .body-sample {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    .mono-sample {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent-gold);
+      background: var(--bg-elevated);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      display: inline-block;
+      border: 1px solid var(--border);
+    }
+
+    .preview-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .btn-group { display: flex; gap: 0.75rem; margin-top: 1rem; }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+    }
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+    }
+    table.data-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      color: var(--text-sub);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+    }
+    table.data-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    table.data-table tr:hover td {
+      background: rgba(255,255,255,0.015);
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="/tom_logo.png" alt="Tirumala Oil Mill Logo" class="brand-logo-img">
+      <div>
+        <h1 class="brand-title">Tirumala Oil Mill <span class="badge-spec">DESIGN SYSTEM V1.0</span></h1>
+        <p class="brand-sub">Clean Minimalist Enterprise • Agritech Industrial Typography & Palette</p>
+      </div>
+    </header>
+
+    <section>
+      <h2>🎨 Color Palette (Section 2.5 & Brand Identity)</h2>
+      <div class="grid-swatches">
+        <div class="swatch-card">
+          <div class="swatch-color" style="background: #0a0b0d;"></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Obsidian Void</div>
+            <div class="swatch-hex">#0a0b0d • Background</div>
+          </div>
+        </div>
+        <div class="swatch-card">
+          <div class="swatch-color" style="background: #131518;"></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Graphite Surface</div>
+            <div class="swatch-hex">#131518 • Cards/Panels</div>
+          </div>
+        </div>
+        <div class="swatch-card">
+          <div class="swatch-color" style="background: #1a1d22;"></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Elevated Steel</div>
+            <div class="swatch-hex">#1a1d22 • Inputs/Modals</div>
+          </div>
+        </div>
+        <div class="swatch-card">
+          <div class="swatch-color" style="background: #d97706;"></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Cold-Pressed Amber</div>
+            <div class="swatch-hex">#d97706 • Primary CTA</div>
+          </div>
+        </div>
+        <div class="swatch-card">
+          <div class="swatch-color" style="background: #f59e0b;"></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Harvest Oil Gold</div>
+            <div class="swatch-hex">#f59e0b • Metric Highlight</div>
+          </div>
+        </div>
+        <div class="swatch-card">
+          <div class="swatch-color" style="background: #10b981;"></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Crop Green</div>
+            <div class="swatch-hex">#10b981 • Passed Lab / Up</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🔤 Typography Stack (Matched to Logo Geometry)</h2>
+      <div class="specimen-box">
+        <div class="specimen-item">
+          <div class="specimen-label">Display & Headings: Outfit (Geometric Sans)</div>
+          <div class="display-sample">TOM INDUSTRIAL COMMODITY ERP</div>
+        </div>
+        <div class="specimen-item">
+          <div class="specimen-label">Body & Controls: Inter (Enterprise Sans)</div>
+          <div class="body-sample">
+            Tirumala Oil Mill manages end-to-end agro-commodity flows: farmer procurement, quality laboratory grading, heavy expeller runs, warehouse batch tracking with permanent bag identifiers, and authorized customer pickup verifications.
+          </div>
+        </div>
+        <div class="specimen-item">
+          <div class="specimen-label">Data, Codes & Ledgers: JetBrains Mono (Tabular Numbers)</div>
+          <div class="mono-sample">BATCH-TUR-260926-001 | NET: 16,300 kg (326 BAGS) | RATE: ₹125.00/kg</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>📊 Live Component Preview</h2>
+      <div class="preview-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <div>
+            <h3 style="font-family:var(--font-display); font-size:1.15rem; font-weight:700;">Cottonseed Batch Inventory</h3>
+            <p style="font-size:0.8rem; color:var(--text-sub);">Hero Godown 1 • Tracked permanent bags</p>
+          </div>
+          <span style="font-family:var(--font-mono); font-size:0.75rem; background:rgba(16,185,129,0.12); color:#10b981; border:1px solid rgba(16,185,129,0.25); padding:3px 10px; border-radius:999px;">
+            ● 40.0t In Stock
+          </span>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Permanent Bag ID</th>
+              <th>Commodity</th>
+              <th>Grade</th>
+              <th>Unit Weight</th>
+              <th>Batch Cost/kg</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-family:var(--font-mono); color:var(--accent-gold);">TUR-260926-001-001</td>
+              <td>Raw Cotton Seed</td>
+              <td><span style="color:#10b981; font-weight:600;">Grade A+</span></td>
+              <td>50.0 kg</td>
+              <td style="font-family:var(--font-mono); font-weight:600; color:#fff;">₹125.00</td>
+            </tr>
+            <tr>
+              <td style="font-family:var(--font-mono); color:var(--accent-gold);">TUR-260926-001-002</td>
+              <td>Raw Cotton Seed</td>
+              <td><span style="color:#10b981; font-weight:600;">Grade A+</span></td>
+              <td>50.0 kg</td>
+              <td style="font-family:var(--font-mono); font-weight:600; color:#fff;">₹125.00</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="btn-group">
+          <button class="btn-primary">Authorize Deduction</button>
+          <button class="btn-secondary">Export Weighment Slip</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

@@ -54,8 +54,8 @@ export default function LoginPage() {
 
         {/* Brand */}
         <div className="relative">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-800 flex items-center justify-center text-3xl mb-7 shadow-brand">
-            🌿
+          <div className="w-16 h-16 rounded-2xl bg-white p-1.5 flex items-center justify-center mb-7 shadow-2xl">
+            <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="font-display text-5xl font-extrabold text-white leading-[1.1] mb-3">
             Tirumala<br />Oil Mill
