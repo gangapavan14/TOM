@@ -1,35 +1,37 @@
 ---
 # gstack: design-md-format=spec
 name: Tirumala Oil Mill (TOM)
-description: Clean minimalist enterprise industrial ERP grounded in precision commodity trading and authentic agricultural craft
+description: High-contrast monochrome enterprise industrial ERP with universal Inter typography, directly derived from the official circular TOM seal
 colors:
-  primary: "#d97706"
-  on-primary: "#ffffff"
-  surface: "#131518"
-  surface-elevated: "#1a1d22"
-  background: "#0a0b0d"
-  text: "#f8fafc"
-  text-muted: "#94a3b8"
-  accent: "#f59e0b"
+  primary: "#ffffff"
+  on-primary: "#09090b"
+  surface: "#121215"
+  surface-elevated: "#18181b"
+  background: "#09090b"
+  text: "#fafafa"
+  text-muted: "#a1a1aa"
+  accent: "#e4e4e7"
   success: "#10b981"
   warning: "#f59e0b"
   error: "#ef4444"
 typography:
   display:
-    fontFamily: Outfit, sans-serif
-    fontWeight: 800
-    letterSpacing: -0.03em
+    fontFamily: Inter, sans-serif
+    fontWeight: 700
+    letterSpacing: -0.025em
   body:
     fontFamily: Inter, sans-serif
     fontSize: 0.875rem
     lineHeight: 1.5
+    fontFeature: cv02, cv03, cv04, cv11, calt
   label:
     fontFamily: Inter, sans-serif
     fontSize: 0.75rem
-    letterSpacing: 0.06em
+    letterSpacing: 0.05em
+    fontWeight: 600
   mono:
-    fontFamily: JetBrains Mono, monospace
-    fontFeature: tnum
+    fontFamily: Inter, monospace
+    fontFeature: tnum, zero
 rounded:
   sm: 6px
   md: 10px
@@ -48,7 +50,7 @@ components:
     textColor: "{colors.on-primary}"
     rounded: "{rounded.sm}"
   button-primary-hover:
-    backgroundColor: "#b45309"
+    backgroundColor: "#e4e4e7"
   input:
     borderColor: "rgba(255, 255, 255, 0.1)"
     rounded: "{rounded.sm}"
@@ -63,12 +65,13 @@ components:
 
 ## Overview
 
-**Creative North Star:** Clean Minimalist Enterprise — high-contrast obsidian slate surfaces with cold-pressed oil gold highlights, geometric precision, and authentic agricultural grain motif directly informed by the official circular **TOM** logo.
+**Creative North Star:** High-Contrast Monochrome Enterprise — deep obsidian black canvas with stark white accents, hairline zinc borders, and refined typographic precision directly mirroring the official circular black-and-white **TOM** seal.
 
 **Product Context:** Tirumala Oil Mill (TOM) Business Management System — a full-scale operational ERP coordinating farmers, commission agents, lab technicians, expeller operators, warehouse keepers, and B2B wholesale buyers.
 
 **Brand Identity & Logo:**
 - **Central Mark:** Geometric bold monogram `TOM` enclosed in a dynamic circular boundary framed by an organic wheat/seed crop stalk on the right quadrant.
+- **Brand Palette:** Pure Black & Crisp White high-contrast circular seal.
 - **Brand Subtitle:** `TIRUMALA OIL MILL` in tracked, modern geometric sans-serif capitals.
 - **Brand Asset Path:** `tom-frontend/public/tom_logo.png` & `frontend/img/logo.png`.
 
@@ -82,24 +85,27 @@ components:
 
 ## Colors
 
-**Strategy:** Restrained & Committed — one deep obsidian baseline (`#0a0b0d` / `#131518`), one dominant agricultural gold accent (`#d97706` / `#f59e0b`), with crisp neutral typography (`#f8fafc`). Color is never gratuitous decoration; it strictly signals domain state:
-- **Obsidian Canvas (`#0a0b0d`):** Deep void minimizing eye fatigue in high-contrast mill operations.
-- **Graphite Surfaces (`#131518` / `#1a1d22`):** Discrete layers for cards, tables, modal dialogs, and navigation sidebars.
-- **Cold-Pressed Amber (`#d97706`):** Primary action buttons, active navigation markers, and verified indicators.
-- **Harvest Oil Gold (`#f59e0b`):** Key financial metrics, pricing highlights, and warning states (e.g. 12-hr reservation timer).
+**Strategy:** High-Contrast Monochrome & Functional Semantics — stark black canvas (`#09090b`), deep zinc structural layers (`#121215` / `#18181b` / `#27272a`), pure white primary action triggers (`#ffffff`), and crisp neutral typography (`#fafafa` / `#a1a1aa`). Color strictly signals domain state:
+- **Obsidian Canvas (`#09090b`):** Pitch black canvas directly echoing the outer tone of the circular logo seal.
+- **Zinc Structural Surfaces (`#121215` / `#18181b` / `#27272a`):** Discrete layers for cards, tables, modal dialogs, and navigation sidebars.
+- **High-Contrast White Primary (`#ffffff`):** Primary action buttons (`bg-white text-zinc-950 hover:bg-zinc-200`), active navigation markers, and verified indicators.
 - **Crop Emerald (`#10b981`):** Passed lab inspections (Grade A+/A), completed dispatches, and healthy mill machinery.
+- **Harvest Amber (`#f59e0b`):** 12-hr reservation timer warnings and pending handovers.
 - **Rejection Crimson (`#ef4444`):** Grade D condition rejection (Section 8.7), price escalations, and machine alerts.
 
 ---
 
 ## Typography
 
-The typographic hierarchy directly translates the geometry of the official **TOM** logo:
+The typographic system is universally powered by **Inter** (Rasmus Andersson's variable UI typeface designed for screens):
 
-1. **Display & Section Headers:** `Outfit` (weights 700 / 800 / 900, `letter-spacing: -0.03em`). Clean, geometric sans-serif echoing the strong, confident letterforms of the central `TOM` emblem.
-2. **Body & Controls:** `Inter` (weights 400 / 500 / 600, `font-size: 0.875rem`). Crisp, legible across desktop displays and rugged mobile handsets on the mill floor.
-3. **Labels & Metadata:** `Inter` (uppercase, `letter-spacing: 0.06em`, `font-size: 0.75rem`). Directly matches the tracked `TIRUMALA OIL MILL` bottom subtitle.
-4. **Data, Permanent Bag IDs & Money:** `JetBrains Mono` (`font-feature-settings: "tnum"`). Guarantees that permanent bag barcodes (`TUR-260926-001-001`), weighbridge weights (`16,300 kg`), and rupee ledgers (`₹1,80,000.00`) align vertically in tables.
+1. **Universal Font:** `Inter` across all headings, display titles, body copy, controls, and data tables.
+2. **Display & Section Headers:** `Inter` (weights 700 / 800, `letter-spacing: -0.025em`). Bold, authoritative, mirroring the central `TOM` emblem.
+3. **Body & Controls:** `Inter` (weights 400 / 500 / 600, `font-size: 0.875rem`, line-height: 1.5).
+4. **Labels & Metadata:** `Inter` (uppercase, `letter-spacing: 0.05em`, `font-size: 0.75rem`, weight: 600). Directly matching the tracked `TIRUMALA OIL MILL` subtitle.
+5. **OpenType Features Enabled:**
+   - Contextual alternates (`cv02`, `cv03`, `cv04`, `cv11`, `calt`).
+   - Tabular Numbers (`tnum`) and Slashed Zero (`zero`) for all permanent bag IDs (`TUR-260926-001-001`), weighbridge weights (`16,300 kg`), and rupee amounts (`₹1,80,000.00`).
 
 ---
 

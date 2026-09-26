@@ -3,36 +3,36 @@
    Global CSS Variables, Reset, Typography, Utilities
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
-/* ---- Color Tokens ---- */
+/* ---- Color Tokens (High-Contrast Monochrome Theme Aligned to Circular TOM Seal) ---- */
 :root {
-  /* Brand — Earthy saffron/turmeric inspired palette */
-  --brand-50:   #fffbeb;
-  --brand-100:  #fef3c7;
-  --brand-200:  #fde68a;
-  --brand-300:  #fcd34d;
-  --brand-400:  #fbbf24;
-  --brand-500:  #f59e0b;
-  --brand-600:  #d97706;
-  --brand-700:  #b45309;
-  --brand-800:  #92400e;
-  --brand-900:  #78350f;
+  /* Brand Monochrome Palette */
+  --brand-50:   #fafafa;
+  --brand-100:  #f4f4f5;
+  --brand-200:  #e4e4e7;
+  --brand-300:  #d4d4d8;
+  --brand-400:  #a1a1aa;
+  --brand-500:  #71717a;
+  --brand-600:  #52525b;
+  --brand-700:  #3f3f46;
+  --brand-800:  #27272a;
+  --brand-900:  #18181b;
 
   /* Surface */
-  --surface-0:  #0f0e0c;
-  --surface-1:  #1a1916;
-  --surface-2:  #242320;
-  --surface-3:  #2e2d29;
-  --surface-4:  #3a3935;
-  --surface-card: rgba(36, 35, 32, 0.80);
-  --surface-glass: rgba(255,255,255,0.04);
+  --surface-0:  #09090b;
+  --surface-1:  #121215;
+  --surface-2:  #18181b;
+  --surface-3:  #27272a;
+  --surface-4:  #3f3f46;
+  --surface-card: rgba(24, 24, 27, 0.90);
+  --surface-glass: rgba(255, 255, 255, 0.04);
 
   /* Text */
-  --text-primary:   #f5f4f0;
-  --text-secondary: #a8a49a;
-  --text-muted:     #6b6760;
-  --text-inverse:   #0f0e0c;
+  --text-primary:   #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted:     #71717a;
+  --text-inverse:   #09090b;
 
   /* Semantic */
   --success-bg: rgba(16, 185, 129, 0.12);
@@ -45,14 +45,14 @@
   --info:       #3b82f6;
 
   /* Border */
-  --border:       rgba(255,255,255,0.07);
-  --border-focus: var(--brand-500);
+  --border:       rgba(255, 255, 255, 0.08);
+  --border-focus: #ffffff;
 
   /* Shadow */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.6);
-  --shadow-brand: 0 0 24px rgba(245,158,11,0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
+  --shadow-brand: 0 0 20px rgba(255, 255, 255, 0.15);
 
   /* Radius */
   --radius-sm: 6px;
@@ -67,9 +67,9 @@
   --gap-lg: 24px;
   --gap-xl: 40px;
 
-  /* Typography */
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* Typography — Universal Inter with OpenType Features */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Sidebar */
   --sidebar-w: 260px;
@@ -92,9 +92,16 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'calt';
 }
 
-a { color: var(--brand-400); text-decoration: none; transition: color 0.2s; }
+/* OpenType Tabular Figures */
+table, td, th, .tabular-nums, .font-mono, .stat-value, .kpi-val, .metric-value, .currency {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum', 'zero';
+}
+
+a { color: #ffffff; text-decoration: none; transition: color 0.2s; }
 a:hover { color: var(--brand-300); }
 
 img, svg { display: block; max-width: 100%; }
@@ -108,7 +115,7 @@ button, input, select, textarea {
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--surface-1); }
 ::-webkit-scrollbar-thumb { background: var(--surface-4); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--brand-700); }
+::-webkit-scrollbar-thumb:hover { background: var(--brand-500); }
 
 /* ============================================================
    LAYOUT
@@ -434,15 +441,15 @@ button, input, select, textarea {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
-  color: #fff;
-  box-shadow: 0 2px 12px rgba(245,158,11,0.3);
+  background: #ffffff;
+  color: #09090b;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--brand-400), var(--brand-600));
-  box-shadow: 0 4px 20px rgba(245,158,11,0.45);
+  background: #e4e4e7;
+  color: #09090b;
   transform: translateY(-1px);
-  color: #fff;
 }
 
 .btn-secondary {

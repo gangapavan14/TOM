@@ -49,18 +49,18 @@ export default function LoginPage() {
       {/* ─── Left branding panel ─── */}
       <div className="hidden lg:flex flex-1 flex-col justify-between px-16 py-14 bg-surface-gradient relative overflow-hidden">
         {/* Glow */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-brand-800/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none" />
 
         {/* Brand */}
         <div className="relative">
           <div className="w-16 h-16 rounded-2xl bg-white p-1.5 flex items-center justify-center mb-7 shadow-2xl">
             <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain" />
           </div>
-          <h1 className="font-display text-5xl font-extrabold text-white leading-[1.1] mb-3">
+          <h1 className="font-sans text-5xl font-extrabold text-white leading-[1.1] mb-3 tracking-tight">
             Tirumala<br />Oil Mill
           </h1>
-          <p className="text-brand-400 text-base font-semibold tracking-wide">
+          <p className="text-zinc-400 text-base font-semibold tracking-wide">
             Business Management System
           </p>
         </div>
@@ -74,13 +74,13 @@ export default function LoginPage() {
               </div>
               <div>
                 <p className="text-white text-sm font-semibold">{f.title}</p>
-                <p className="text-zinc-500 text-xs">{f.sub}</p>
+                <p className="text-zinc-400 text-xs">{f.sub}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <p className="relative text-zinc-600 text-xs">
+        <p className="relative text-zinc-500 text-xs">
           © 2026 Tirumala Oil Mill. All rights reserved.
         </p>
       </div>
@@ -91,17 +91,17 @@ export default function LoginPage() {
 
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 flex items-center justify-center text-xl shadow-brand">
-              🌿
+            <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md">
+              <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain" />
             </div>
             <div>
-              <p className="font-display font-bold text-white">TOM System</p>
-              <p className="text-zinc-500 text-xs">Tirumala Oil Mill</p>
+              <p className="font-sans font-bold text-white tracking-tight">TOM System</p>
+              <p className="text-zinc-400 text-xs">Tirumala Oil Mill</p>
             </div>
           </div>
 
-          <h2 className="font-display text-3xl font-extrabold text-white mb-1">Welcome back</h2>
-          <p className="text-zinc-500 text-sm mb-8">Sign in to your TOM account</p>
+          <h2 className="font-sans text-3xl font-extrabold text-white mb-1 tracking-tight">Welcome back</h2>
+          <p className="text-zinc-400 text-sm mb-8">Sign in to your TOM account</p>
 
           {error && (
             <div className="mb-5 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
@@ -154,16 +154,16 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-white/[0.07] text-center text-xs text-zinc-600">
-            Need access? Contact your <span className="text-zinc-400 font-medium">TOM Administrator</span>
+          <div className="mt-6 pt-6 border-t border-white/[0.07] text-center text-xs text-zinc-500">
+            Need access? Contact your <span className="text-zinc-300 font-medium">TOM Administrator</span>
           </div>
 
           {/* Dev hint */}
-          <div className="mt-4 px-4 py-3 bg-brand-500/5 border border-brand-500/15 rounded-xl text-center">
-            <p className="text-xs text-zinc-500">
-              🔧 Dev: <code className="text-brand-400 bg-surface-2 px-1.5 py-0.5 rounded font-mono">admin</code>
+          <div className="mt-4 px-4 py-3 bg-white/[0.04] border border-white/10 rounded-xl text-center">
+            <p className="text-xs text-zinc-400">
+              🔧 Dev: <code className="text-zinc-200 bg-surface-2 px-1.5 py-0.5 rounded font-mono">admin</code>
               {' / '}
-              <code className="text-brand-400 bg-surface-2 px-1.5 py-0.5 rounded font-mono">Admin@123</code>
+              <code className="text-zinc-200 bg-surface-2 px-1.5 py-0.5 rounded font-mono">Admin@123</code>
             </p>
           </div>
 

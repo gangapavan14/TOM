@@ -117,8 +117,8 @@ export default function AppLayout({ children }) {
             <img src="/tom_logo.png" alt="TOM Logo" className="w-full h-full object-contain" />
           </div>
           <div className="leading-tight flex-1 min-w-0">
-            <p className="font-display font-bold text-white text-sm">TOM System</p>
-            <p className="text-zinc-500 text-xs truncate">Tirumala Oil Mill</p>
+            <p className="font-sans font-bold text-white text-sm tracking-tight">TOM System</p>
+            <p className="text-zinc-400 text-xs truncate">Tirumala Oil Mill</p>
           </div>
           <button className="ml-auto lg:hidden text-zinc-400 hover:text-white"
                   onClick={() => setSidebarOpen(false)}>
@@ -129,15 +129,15 @@ export default function AppLayout({ children }) {
         {/* Role Badge & Quick Switch */}
         <div className="px-4 py-3 bg-surface-2/60 border-b border-white/[0.05] flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <ShieldCheck size={14} className="text-amber-400 flex-shrink-0" />
+            <ShieldCheck size={14} className="text-zinc-300 flex-shrink-0" />
             <div className="min-w-0">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Active Role</p>
+              <p className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Active Role</p>
               <p className="text-xs font-bold text-white truncate">{user?.role?.replace('_', ' ')}</p>
             </div>
           </div>
           <button
             onClick={() => setRoleModalOpen(true)}
-            className="text-[11px] font-semibold text-amber-400 hover:text-amber-300 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 transition-colors"
+            className="text-[11px] font-semibold text-zinc-200 hover:text-white px-2 py-0.5 rounded bg-white/10 border border-white/20 transition-colors"
             title="Switch role to test security permissions"
           >
             Switch
@@ -161,7 +161,7 @@ export default function AppLayout({ children }) {
                   <Icon size={16} className="flex-shrink-0 opacity-70" />
                   <span className="flex-1">{label}</span>
                   {badge != null && (
-                    <span className="ml-auto bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    <span className="ml-auto bg-white text-zinc-950 text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
                       {badge}
                     </span>
                   )}
@@ -177,7 +177,7 @@ export default function AppLayout({ children }) {
             <Avatar name={user?.fullName ?? 'User'} size="sm" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">{user?.fullName}</p>
-              <p className="text-xs text-zinc-500 truncate">@{user?.username}</p>
+              <p className="text-xs text-zinc-400 truncate">@{user?.username}</p>
             </div>
           </div>
           <button onClick={handleLogout}
@@ -202,7 +202,7 @@ export default function AppLayout({ children }) {
 
           <div className="flex items-center gap-2 text-xs text-zinc-400">
             <span className="hidden sm:inline">Permission Level:</span>
-            <span className="font-mono text-amber-400 font-bold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+            <span className="font-mono text-zinc-100 font-semibold px-2 py-0.5 rounded bg-white/10 border border-white/20">
               {user?.role?.replace('_', ' ')}
             </span>
           </div>
@@ -213,9 +213,9 @@ export default function AppLayout({ children }) {
             {/* Quick role test dropdown */}
             <button
               onClick={() => setRoleModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-2 border border-white/10 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-surface-3 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-2 border border-white/10 text-xs font-semibold text-zinc-200 hover:text-white hover:bg-surface-3 transition-colors"
             >
-              <UserCheck size={14} className="text-amber-400" />
+              <UserCheck size={14} className="text-zinc-300" />
               <span>Test Role</span>
             </button>
 
@@ -306,7 +306,7 @@ export default function AppLayout({ children }) {
           <div className="bg-surface-1 border border-white/10 rounded-2xl w-full max-w-lg p-6 space-y-5" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-display font-bold text-white text-lg">Role-Based Security Demo</h3>
+                <h3 className="font-sans font-bold text-white text-lg tracking-tight">Role-Based Security Demo</h3>
                 <p className="text-zinc-400 text-xs mt-1">Switch persona to inspect which menus, sensitive data, and controls are restricted.</p>
               </div>
               <button onClick={() => setRoleModalOpen(false)} className="text-zinc-400 hover:text-white">✕</button>
@@ -321,16 +321,16 @@ export default function AppLayout({ children }) {
                     onClick={() => handleRoleSwitch(role)}
                     className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-start justify-between ${
                       isActive
-                        ? 'bg-amber-500/10 border-amber-500/40 text-white shadow-sm'
+                        ? 'bg-white/10 border-white/40 text-white shadow-sm'
                         : 'bg-surface-2 border-white/5 text-zinc-300 hover:bg-surface-3 hover:border-white/10'
                     }`}
                   >
                     <div>
-                      <p className={`font-semibold text-sm ${isActive ? 'text-amber-400 font-bold' : 'text-white'}`}>{label}</p>
+                      <p className={`font-semibold text-sm ${isActive ? 'text-white font-bold' : 'text-zinc-200'}`}>{label}</p>
                       <p className="text-xs text-zinc-400 mt-0.5">{desc}</p>
                     </div>
                     {isActive && (
-                      <span className="text-xs font-bold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full">
+                      <span className="text-xs font-bold text-zinc-950 bg-white px-2 py-0.5 rounded-full">
                         Active
                       </span>
                     )}
@@ -339,8 +339,8 @@ export default function AppLayout({ children }) {
               })}
             </div>
 
-            <div className="p-3 bg-surface-2 rounded-xl text-xs text-zinc-500 flex items-center gap-2">
-              <AlertCircle size={14} className="text-amber-400 flex-shrink-0" />
+            <div className="p-3 bg-surface-2 rounded-xl text-xs text-zinc-400 flex items-center gap-2">
+              <AlertCircle size={14} className="text-zinc-400 flex-shrink-0" />
               <span>Restricted modules are stripped from the sidebar and protected by 403 route firewalls.</span>
             </div>
 
