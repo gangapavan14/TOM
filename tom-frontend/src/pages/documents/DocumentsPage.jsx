@@ -182,7 +182,7 @@ export default function DocumentsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-white font-display">
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-950 font-display">
               Central Document Repository
             </h1>
             <Badge variant="brand">Section 15</Badge>
@@ -203,26 +203,26 @@ export default function DocumentsPage() {
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-surface-1 border border-white/[0.07]">
+        <div className="p-4 rounded-xl bg-white border border-zinc-200">
           <p className="text-xs text-zinc-400">Total Archival Records</p>
-          <p className="text-xl font-bold text-white mt-1">{documents.length}</p>
+          <p className="text-xl font-bold text-zinc-950 mt-1">{documents.length}</p>
           <p className="text-[11px] text-zinc-500 mt-0.5">Permanent immutable storage</p>
         </div>
-        <div className="p-4 rounded-xl bg-surface-1 border border-white/[0.07]">
+        <div className="p-4 rounded-xl bg-white border border-zinc-200">
           <p className="text-xs text-zinc-400">Verified Legal Deeds</p>
           <p className="text-xl font-bold text-emerald-400 mt-1">
             {documents.filter(d => d.verified).length}
           </p>
           <p className="text-[11px] text-emerald-500/80 mt-0.5">Signed & stamp certified</p>
         </div>
-        <div className="p-4 rounded-xl bg-surface-1 border border-white/[0.07]">
+        <div className="p-4 rounded-xl bg-white border border-zinc-200">
           <p className="text-xs text-zinc-400">Pending Verification</p>
-          <p className="text-xl font-bold text-amber-400 mt-1">
+          <p className="text-xl font-bold text-zinc-900 mt-1">
             {documents.filter(d => !d.verified).length}
           </p>
-          <p className="text-[11px] text-amber-500/80 mt-0.5">Requires Admin signoff</p>
+          <p className="text-[11px] text-zinc-950/80 mt-0.5">Requires Admin signoff</p>
         </div>
-        <div className="p-4 rounded-xl bg-surface-1 border border-white/[0.07]">
+        <div className="p-4 rounded-xl bg-white border border-zinc-200">
           <p className="text-xs text-zinc-400">Auditable Attachment Types</p>
           <p className="text-xl font-bold text-indigo-400 mt-1">6 Categories</p>
           <p className="text-[11px] text-indigo-400/80 mt-0.5">Invoices, Deeds, Slips, Lab</p>
@@ -250,7 +250,7 @@ export default function DocumentsPage() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                 selectedType === type.value
                   ? 'bg-brand-600 text-white shadow-sm'
-                  : 'bg-surface-2 text-zinc-400 hover:text-white border border-white/[0.05]'
+                  : 'bg-zinc-100 text-zinc-400 hover:text-zinc-950 border border-zinc-200'
               }`}
             >
               {type.label}
@@ -260,10 +260,10 @@ export default function DocumentsPage() {
       </div>
 
       {/* Documents Table */}
-      <div className="rounded-xl border border-white/[0.08] bg-surface-1 overflow-hidden shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-surface-2/60 text-zinc-400 text-xs uppercase border-b border-white/[0.08]">
+            <thead className="bg-zinc-100/60 text-zinc-400 text-xs uppercase border-b border-zinc-200">
               <tr>
                 <th className="px-5 py-3.5 font-semibold">Document Title / ID</th>
                 <th className="px-5 py-3.5 font-semibold">Category</th>
@@ -273,7 +273,7 @@ export default function DocumentsPage() {
                 <th className="px-5 py-3.5 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.05] text-zinc-300">
+            <tbody className="divide-y divide-zinc-100 text-zinc-700">
               {filteredDocs.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-12">
@@ -286,10 +286,10 @@ export default function DocumentsPage() {
                 </tr>
               ) : (
                 filteredDocs.map(doc => (
-                  <tr key={doc.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={doc.id} className="hover:bg-zinc-50/80 transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-surface-3 border border-white/[0.08] text-brand-400 mt-0.5">
+                        <div className="p-2 rounded-lg bg-zinc-200 border border-zinc-200 text-brand-400 mt-0.5">
                           <FileText size={18} />
                         </div>
                         <div>
@@ -312,7 +312,7 @@ export default function DocumentsPage() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <Building2 size={14} className="text-zinc-500 flex-shrink-0" />
-                        <span className="text-xs font-medium text-zinc-200">{doc.entityId}</span>
+                        <span className="text-xs font-medium text-zinc-800">{doc.entityId}</span>
                       </div>
                     </td>
                     <td className="px-5 py-4 text-xs text-zinc-400">
@@ -321,12 +321,12 @@ export default function DocumentsPage() {
                     </td>
                     <td className="px-5 py-4">
                       {doc.verified ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-zinc-900 bg-zinc-100 border border-zinc-200 border border-emerald-500/20">
                           <CheckCircle2 size={12} />
                           Verified
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-zinc-900 bg-zinc-100 border border-zinc-200">
                           <AlertTriangle size={12} />
                           Pending Admin Check
                         </span>
@@ -336,14 +336,14 @@ export default function DocumentsPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setSelectedDoc(doc)}
-                          className="p-1.5 rounded-lg bg-surface-2 hover:bg-white/[0.08] text-zinc-400 hover:text-white transition-colors"
+                          className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-50/80 text-zinc-400 hover:text-zinc-950 transition-colors"
                           title="Preview document details"
                         >
                           <Eye size={15} />
                         </button>
                         <button
                           onClick={() => toast.success(`Downloading ${doc.id}...`)}
-                          className="p-1.5 rounded-lg bg-surface-2 hover:bg-white/[0.08] text-zinc-400 hover:text-white transition-colors"
+                          className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-50/80 text-zinc-400 hover:text-zinc-950 transition-colors"
                           title="Download archival copy"
                         >
                           <Download size={15} />
@@ -366,20 +366,20 @@ export default function DocumentsPage() {
           title={`Document Details — ${selectedDoc.id}`}
         >
           <div className="space-y-5">
-            <div className="p-4 rounded-xl bg-surface-2 border border-white/[0.06] space-y-2">
-              <h3 className="text-base font-semibold text-white">{selectedDoc.title}</h3>
+            <div className="p-4 rounded-xl bg-zinc-100 border border-zinc-200 space-y-2">
+              <h3 className="text-base font-semibold text-zinc-900">{selectedDoc.title}</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">{selectedDoc.notes}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-xs">
-              <div className="p-3 rounded-lg bg-surface-2/60 border border-white/[0.04]">
+              <div className="p-3 rounded-lg bg-zinc-100/60 border border-white/[0.04]">
                 <p className="text-zinc-500 uppercase tracking-wider text-[10px] font-semibold">Linked Entity</p>
-                <p className="font-semibold text-white mt-1">{selectedDoc.entityId}</p>
+                <p className="font-semibold text-zinc-900 mt-1">{selectedDoc.entityId}</p>
                 <p className="text-zinc-500 text-[11px] mt-0.5">Type: {selectedDoc.entityType}</p>
               </div>
-              <div className="p-3 rounded-lg bg-surface-2/60 border border-white/[0.04]">
+              <div className="p-3 rounded-lg bg-zinc-100/60 border border-white/[0.04]">
                 <p className="text-zinc-500 uppercase tracking-wider text-[10px] font-semibold">Verification State</p>
-                <p className={`font-semibold mt-1 ${selectedDoc.verified ? 'text-emerald-400' : 'text-amber-400'}`}>
+                <p className={`font-semibold mt-1 ${selectedDoc.verified ? 'text-emerald-400' : 'text-zinc-900'}`}>
                   {selectedDoc.verified ? 'Legally Signed & Verified' : 'Pending Admin Verification'}
                 </p>
                 <p className="text-zinc-500 text-[11px] mt-0.5">By {selectedDoc.uploadedBy}</p>
@@ -401,7 +401,7 @@ export default function DocumentsPage() {
             <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <FileText size={16} className="text-brand-400" />
-                <span className="text-zinc-300 font-mono">{selectedDoc.id}.pdf ({selectedDoc.fileSize})</span>
+                <span className="text-zinc-700 font-mono">{selectedDoc.id}.pdf ({selectedDoc.fileSize})</span>
               </div>
               <button
                 onClick={() => toast.success(`Simulating download of ${selectedDoc.id}...`)}
@@ -411,7 +411,7 @@ export default function DocumentsPage() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-white/[0.08]">
+            <div className="flex items-center justify-between pt-3 border-t border-zinc-200">
               {!selectedDoc.verified && (
                 <button
                   type="button"
@@ -516,13 +516,13 @@ export default function DocumentsPage() {
               />
             </FormField>
 
-            <div className="p-3 rounded-lg border border-dashed border-zinc-700 bg-surface-2 text-center text-xs text-zinc-400 cursor-pointer hover:border-brand-500 transition-colors">
+            <div className="p-3 rounded-lg border border-dashed border-zinc-700 bg-zinc-100 text-center text-xs text-zinc-400 cursor-pointer hover:border-brand-500 transition-colors">
               <Upload size={20} className="mx-auto text-zinc-500 mb-1" />
-              <p className="font-medium text-white">Choose file or drag and drop</p>
+              <p className="font-medium text-zinc-950">Choose file or drag and drop</p>
               <p className="text-[11px] text-zinc-500 mt-0.5">PDF, PNG, JPG up to 15MB</p>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/[0.08]">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-200">
               <button
                 type="button"
                 onClick={() => setShowUploadModal(false)}

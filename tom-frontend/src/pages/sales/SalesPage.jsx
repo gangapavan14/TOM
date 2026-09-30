@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardHeader, Badge, StatusBadge, Modal, FormField } from '../../components/ui'
+import { useAuth } from '../../context/AuthContext'
+import { useOperationalData } from '../../context/OperationalDataContext'
 import { salesApi } from '../../api/endpoints'
 import { Plus, Search, TrendingUp, CheckCircle, FileText, ArrowRight, Truck, UserCheck, Scale, AlertTriangle, ShieldCheck, DollarSign } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -123,11 +125,19 @@ const initialCollections = [
 ]
 
 export default function SalesPage() {
+  const { user } = useAuth()
+  const {
+    orders,
+    createSalesOrder,
+    verifySalesOrderLoading,
+    customers,
+    cashHandovers,
+    recordCashCollection,
+    verifyCashHandover
+  } = useOperationalData()
+
   const [tab, setTab] = useState('orders')
   const [search, setSearch] = useState('')
-  const [orders, setOrders] = useState(initialOrders)
-  const [customers, setCustomers] = useState(initialCustomers)
-  const [collections, setCollections] = useState(initialCollections)
 
   // Modals
   const [showOrderModal, setShowOrderModal] = useState(false)
@@ -153,6 +163,7 @@ export default function SalesPage() {
   const [newCollection, setNewCollection] = useState({
     customer: 'Sri Balaji Co.',
     amount: '',
+    notes: 'Field collection handed over to Admin',
     collectedDate: 'Today'
   })
 
@@ -166,7 +177,7 @@ export default function SalesPage() {
     const total = (bags * price) + loadingCharge + freightCharge
 
     const created = {
-      id: `ORD-00${orders.length + 1}`,
+      id: `ORD-00${(orders?.length || 0) + 1}`,
       customer: newOrder.customer,
       product: newOrder.product,
       qty: bags,
@@ -186,47 +197,26 @@ export default function SalesPage() {
       date: 'Today'
     }
 
-    setOrders([created, ...orders])
-    toast.success(`B2B Order #${created.id} placed! Stock reserved in godown.`)
+    createSalesOrder(created)
     setShowOrderModal(false)
   }
 
   // Section 11.5: Senior Worker records loading & Field Officer verifies before inventory deduction
   const handleVerifyLoading = (orderId) => {
-    setOrders(orders.map(o => {
-      if (o.id === orderId) {
-        toast.success(`Loading Verified by Field Officer! Inventory deducted from Warehouse.`)
-        return {
-          ...o,
-          seniorWorkerRecorded: true,
-          seniorWorkerName: 'G. Apparao',
-          fieldOfficerVerified: true,
-          fieldOfficerName: 'K. Ramesh (Field Officer)',
-          status: 'VERIFIED'
-        }
-      }
-      return o
-    }))
+    verifySalesOrderLoading(orderId, user?.role === 'FIELD_OFFICER' ? `${user.fullName} (Field Officer)` : 'Field Officer Signoff')
     setActivePickupOrder(null)
   }
 
   // Section 11.8: Admin Verifies Cash Collection
   const handleAdminVerifyCash = (colId) => {
-    setCollections(collections.map(c => {
-      if (c.id === colId) {
-        toast.success(`Admin verified cash collection of ₹${c.cashHandedOver.toLocaleString('en-IN')}! Official financial transaction posted.`)
-        return {
-          ...c,
-          verifiedCash: c.cashHandedOver,
-          status: 'ADMIN_VERIFIED',
-          verifiedBy: 'Admin'
-        }
-      }
-      return c
-    }))
+    if (user?.role !== 'ADMIN') {
+      toast.error('Rule 7: Only Admin holds supreme authority to verify physical currency.')
+      return
+    }
+    verifyCashHandover(colId)
   }
 
-  const filtered = orders.filter(o =>
+  const filtered = (orders || []).filter(o =>
     o.customer.toLowerCase().includes(search.toLowerCase()) ||
     o.id.toLowerCase().includes(search.toLowerCase()) ||
     o.product.toLowerCase().includes(search.toLowerCase())
@@ -247,7 +237,7 @@ export default function SalesPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">B2B Sales Operations</h1>
+          <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-display">B2B Sales Operations</h1>
           <p className="page-sub text-zinc-400 text-sm mt-1">
             Section 11: Customer Pickups vs Fleet Delivery, Physical Loading Verification & Cash Reconciliation
           </p>
@@ -265,15 +255,15 @@ export default function SalesPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Active Sales Orders', value: orders.filter(o => o.status !== 'DELIVERED').length, icon: '📋', color: 'text-blue-400 bg-blue-500/10' },
-          { label: 'Customer Pickups Today', value: orders.filter(o => o.deliveryType === 'CUSTOMER_PICKUP').length, icon: '🚚', color: 'text-amber-400 bg-amber-500/10' },
-          { label: 'Pending FO Verifications', value: orders.filter(o => o.status === 'LOADING' && !o.fieldOfficerVerified).length, icon: '🔍', color: 'text-red-400 bg-red-500/10' },
-          { label: 'Customer Receivables', value: `₹${(totalOutstanding / 100000).toFixed(1)} L`, icon: '💰', color: 'text-emerald-400 bg-emerald-500/10' },
+          { label: 'Active Sales Orders', value: orders.filter(o => o.status !== 'DELIVERED').length, icon: '📋', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Customer Pickups Today', value: orders.filter(o => o.deliveryType === 'CUSTOMER_PICKUP').length, icon: '🚚', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Pending FO Verifications', value: orders.filter(o => o.status === 'LOADING' && !o.fieldOfficerVerified).length, icon: '🔍', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Customer Receivables', value: `₹${(totalOutstanding / 100000).toFixed(1)} L`, icon: '💰', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
         ].map(s => (
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl ${s.color} flex items-center justify-center text-xl flex-shrink-0`}>{s.icon}</div>
             <div>
-              <p className="text-xl font-extrabold font-display text-white">{s.value}</p>
+              <p className="text-xl font-extrabold font-display text-zinc-950">{s.value}</p>
               <p className="text-xs text-zinc-500">{s.label}</p>
             </div>
           </div>
@@ -281,10 +271,10 @@ export default function SalesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-2 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-zinc-100 p-1 rounded-xl w-fit">
         {['orders', 'customers', 'reconciliation'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-surface-3 text-white' : 'text-zinc-500 hover:text-white'}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-950'}`}>
             {t === 'orders' ? '1. Orders & Pickup Dispatch' : t === 'customers' ? '2. Customer Accounts & Credit Limits' : '3. Sales Cash Reconciliation (Section 11.9)'}
           </button>
         ))}
@@ -310,12 +300,12 @@ export default function SalesPage() {
               </thead>
               <tbody>
                 {filtered.map(o => (
-                  <tr key={o.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-mono text-xs text-amber-400 font-semibold">{o.id}</td>
-                    <td className="font-semibold text-white">{o.customer}</td>
+                  <tr key={o.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-mono text-xs text-zinc-950 font-bold">{o.id}</td>
+                    <td className="font-semibold text-zinc-900">{o.customer}</td>
                     <td>{o.product}</td>
-                    <td className="text-right font-mono text-zinc-200">{o.qty} bags</td>
-                    <td className="text-right font-semibold text-amber-300 font-mono">₹{o.agreedPrice}/bag</td>
+                    <td className="text-right font-mono text-zinc-900">{o.qty} bags</td>
+                    <td className="text-right font-semibold text-zinc-800 font-mono">₹{o.agreedPrice}/bag</td>
                     <td>
                       <Badge variant={o.deliveryType === 'CUSTOMER_PICKUP' ? 'warning' : 'info'}>
                         {o.deliveryType === 'CUSTOMER_PICKUP' ? 'Customer Pickup' : 'TOM Fleet Delivery'}
@@ -328,7 +318,7 @@ export default function SalesPage() {
                           <CheckCircle size={13} /> Verified by FO
                         </span>
                       ) : (
-                        <span className="text-xs text-amber-400 flex items-center gap-1 font-mono">
+                        <span className="text-xs text-zinc-900 flex items-center gap-1 font-mono">
                           <Scale size={13} /> Senior Worker Loaded
                         </span>
                       )}
@@ -347,7 +337,7 @@ export default function SalesPage() {
                         )}
                         <button
                           onClick={() => setSelectedOrder(o)}
-                          className="btn-ghost text-xs py-1 px-2 text-zinc-300 hover:text-white"
+                          className="btn-ghost text-xs py-1 px-2 text-zinc-700 hover:text-zinc-950"
                         >
                           Invoice Details
                         </button>
@@ -378,17 +368,21 @@ export default function SalesPage() {
                 </tr>
               </thead>
               <tbody>
-                {customers.map(c => (
-                  <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-semibold text-white">{c.name}</td>
-                    <td className="text-zinc-400">{c.contact}</td>
-                    <td className="text-zinc-400 font-mono text-xs">{c.phone}</td>
-                    <td className="text-zinc-400">{c.city}</td>
-                    <td className="text-right font-mono text-emerald-400">{c.creditLimit}</td>
-                    <td className="text-right font-semibold text-amber-400 font-mono">{c.outstanding}</td>
-                    <td><Badge variant="success">{c.status}</Badge></td>
-                  </tr>
-                ))}
+                {(customers || []).map(c => {
+                  const limitStr = typeof c.creditLimit === 'number' ? `₹${c.creditLimit.toLocaleString('en-IN')}` : c.creditLimit
+                  const outStr = typeof c.outstanding === 'number' ? `₹${c.outstanding.toLocaleString('en-IN')}` : c.outstanding
+                  return (
+                    <tr key={c.id} className="hover:bg-zinc-50/80 transition-colors">
+                      <td className="font-semibold text-zinc-900">{c.name}</td>
+                      <td className="text-zinc-600">{c.contact}</td>
+                      <td className="text-zinc-600 font-mono text-xs">{c.phone}</td>
+                      <td className="text-zinc-600">{c.city}</td>
+                      <td className="text-right font-mono text-zinc-700">{limitStr}</td>
+                      <td className="text-right font-semibold text-zinc-900 font-mono">{outStr}</td>
+                      <td><Badge variant="success">{c.status}</Badge></td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -417,35 +411,41 @@ export default function SalesPage() {
                 </tr>
               </thead>
               <tbody>
-                {collections.map(col => (
-                  <tr key={col.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-mono text-xs text-amber-400 font-semibold">{col.id}</td>
-                    <td className="font-semibold text-white">{col.customer}</td>
-                    <td className="text-zinc-300 text-xs">{col.salesPerson}</td>
-                    <td className="text-right font-mono text-zinc-300">₹{col.expectedCash.toLocaleString('en-IN')}</td>
-                    <td className="text-right font-mono text-amber-400 font-bold">₹{col.cashHandedOver.toLocaleString('en-IN')}</td>
-                    <td className="text-right font-mono text-emerald-400 font-bold">
-                      {col.verifiedCash > 0 ? `₹${col.verifiedCash.toLocaleString('en-IN')}` : '—'}
-                    </td>
-                    <td>
-                      <Badge variant={col.status === 'ADMIN_VERIFIED' ? 'success' : 'warning'}>
-                        {col.status.replace('_', ' ')}
-                      </Badge>
-                    </td>
-                    <td className="text-right">
-                      {col.status !== 'ADMIN_VERIFIED' ? (
-                        <button
-                          onClick={() => handleAdminVerifyCash(col.id)}
-                          className="btn-primary text-xs px-2.5 py-1"
-                        >
-                          Verify & Settle Ledger
-                        </button>
-                      ) : (
-                        <span className="text-xs text-emerald-400 font-semibold">Ledger Settled</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {(cashHandovers || []).map(col => {
+                  const expected = col.amount || col.expectedCash || 0
+                  const handed = col.amount || col.cashHandedOver || 0
+                  const verified = col.verified ? (col.amount || col.verifiedCash || handed) : 0
+                  return (
+                    <tr key={col.id} className="hover:bg-zinc-50/80 transition-colors">
+                      <td className="font-mono text-xs text-zinc-950 font-bold">{col.id}</td>
+                      <td className="font-semibold text-zinc-900">{col.customer}</td>
+                      <td className="text-zinc-700 text-xs">{col.salesPerson}</td>
+                      <td className="text-right font-mono text-zinc-700">₹{expected.toLocaleString('en-IN')}</td>
+                      <td className="text-right font-mono text-zinc-950 font-bold">₹{handed.toLocaleString('en-IN')}</td>
+                      <td className="text-right font-mono text-zinc-950 font-bold">
+                        {verified > 0 ? `₹${verified.toLocaleString('en-IN')}` : '—'}
+                      </td>
+                      <td>
+                        <Badge variant={col.status === 'ADMIN_VERIFIED' || col.verified ? 'success' : 'warning'}>
+                          {col.status === 'ADMIN_VERIFIED' || col.verified ? 'ADMIN VERIFIED' : 'PENDING ADMIN VERIFY'}
+                        </Badge>
+                      </td>
+                      <td className="text-right">
+                        {!col.verified && col.status !== 'ADMIN_VERIFIED' ? (
+                          <button
+                            onClick={() => handleAdminVerifyCash(col.id)}
+                            className="btn-primary text-xs px-2.5 py-1"
+                            title="Rule 7: Admin physical currency count verification"
+                          >
+                            Verify & Settle Ledger
+                          </button>
+                        ) : (
+                          <span className="text-xs text-zinc-900 font-semibold">Ledger Settled</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -480,20 +480,20 @@ export default function SalesPage() {
           </FormField>
 
           {/* Section 11.10: 3-tier Pricing Architecture */}
-          <div className="p-3 bg-surface-3 rounded-xl border border-white/5 space-y-2">
+          <div className="p-3 bg-zinc-200 rounded-xl border border-white/5 space-y-2">
             <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Pricing Architecture (Section 11.10)</p>
             <div className="grid grid-cols-3 gap-2 text-xs">
-              <div className="p-2 bg-surface-2 rounded-lg text-center">
+              <div className="p-2 bg-zinc-100 rounded-lg text-center">
                 <span className="text-zinc-500 block text-[10px]">Product Cost</span>
-                <span className="font-mono text-white font-bold">₹{newOrder.costPrice}</span>
+                <span className="font-mono text-zinc-900 font-bold">₹{newOrder.costPrice}</span>
               </div>
-              <div className="p-2 bg-surface-2 rounded-lg text-center">
+              <div className="p-2 bg-zinc-100 rounded-lg text-center">
                 <span className="text-zinc-500 block text-[10px]">Reference Rate</span>
-                <span className="font-mono text-zinc-300 font-bold">₹{newOrder.referencePrice}</span>
+                <span className="font-mono text-zinc-700 font-bold">₹{newOrder.referencePrice}</span>
               </div>
-              <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-center">
-                <span className="text-amber-400 block text-[10px]">Customer Agreed</span>
-                <span className="font-mono text-amber-300 font-extrabold text-sm">₹{newOrder.agreedPrice}</span>
+              <div className="p-2 bg-zinc-100 border border-zinc-200 rounded-lg text-center">
+                <span className="text-zinc-900 block text-[10px]">Customer Agreed</span>
+                <span className="font-mono text-zinc-950 font-bold text-sm">₹{newOrder.agreedPrice}</span>
               </div>
             </div>
           </div>
@@ -521,7 +521,7 @@ export default function SalesPage() {
           </div>
 
           {newOrder.deliveryType === 'CUSTOMER_PICKUP' ? (
-            <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs text-amber-300">
+            <div className="p-2.5 bg-zinc-100 border border-zinc-200 rounded-lg text-xs text-zinc-800">
               🚚 <strong>Customer Pickup Policy (Section 11.5):</strong> Customer brings vehicle. Zero TOM delivery charge. Loading cost (₹5/bag) applies. Field Officer will verify physical loading prior to inventory deduction.
             </div>
           ) : (
@@ -540,33 +540,33 @@ export default function SalesPage() {
       {/* Invoice Details Modal */}
       <Modal open={!!selectedOrder} onClose={() => setSelectedOrder(null)} title={`Tax Invoice Breakdown — ${selectedOrder?.id}`}>
         <div className="space-y-4">
-          <div className="p-4 bg-surface-3 rounded-xl space-y-2 text-xs">
+          <div className="p-4 bg-zinc-200 rounded-xl space-y-2 text-xs">
             <div className="flex justify-between">
               <span className="text-zinc-400">Customer:</span>
-              <span className="font-bold text-white">{selectedOrder?.customer}</span>
+              <span className="font-bold text-zinc-950">{selectedOrder?.customer}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Product / Commodity:</span>
-              <span className="text-amber-300 font-semibold">{selectedOrder?.product}</span>
+              <span className="text-zinc-950 font-bold">{selectedOrder?.product}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Quantity:</span>
-              <span className="font-mono text-white">{selectedOrder?.qty} Bags ({(selectedOrder?.qty || 0) * 50} kg)</span>
+              <span className="font-mono text-zinc-900">{selectedOrder?.qty} Bags ({(selectedOrder?.qty || 0) * 50} kg)</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Base Commodity Amount:</span>
-              <span className="font-mono text-white font-semibold">₹ {((selectedOrder?.qty || 0) * (selectedOrder?.agreedPrice || 0)).toLocaleString('en-IN')}</span>
+              <span className="font-mono text-zinc-900 font-semibold">₹ {((selectedOrder?.qty || 0) * (selectedOrder?.agreedPrice || 0)).toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Loading Charge (₹5/bag):</span>
-              <span className="font-mono text-zinc-300">₹ {selectedOrder?.loadingCost}</span>
+              <span className="font-mono text-zinc-700">₹ {selectedOrder?.loadingCost}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Freight Delivery Charge:</span>
-              <span className="font-mono text-zinc-300">₹ {selectedOrder?.freightCost}</span>
+              <span className="font-mono text-zinc-700">₹ {selectedOrder?.freightCost}</span>
             </div>
             <div className="flex justify-between pt-2 border-t border-white/5 font-bold text-sm">
-              <span className="text-amber-400">Net Invoice Total:</span>
+              <span className="text-zinc-900">Net Invoice Total:</span>
               <span className="font-mono text-emerald-400">{selectedOrder?.value}</span>
             </div>
             <div className="flex justify-between pt-2 border-t border-white/5">
@@ -591,20 +591,14 @@ export default function SalesPage() {
         <form onSubmit={(e) => {
           e.preventDefault()
           const amt = parseFloat(newCollection.amount) || 0
-          const created = {
-            id: `COL-10${collections.length + 1}`,
+          recordCashCollection({
             customer: newCollection.customer,
-            salesPerson: 'Suresh Kumar (Sales)',
-            expectedCash: amt,
-            cashHandedOver: amt,
-            verifiedCash: 0,
-            status: 'PENDING_ADMIN_VERIFY',
-            collectedDate: 'Today',
-            verifiedBy: '—'
-          }
-          setCollections([created, ...collections])
-          toast.success(`Handed over ₹${amt.toLocaleString('en-IN')} cash to Admin! Awaiting verification.`)
+            amount: amt,
+            salesPerson: user?.fullName || 'Suresh Kumar (Sales)',
+            notes: newCollection.notes || 'Sales field cash collection handed to Admin'
+          })
           setShowReconciliationModal(false)
+          setNewCollection({ customer: customers[0]?.name || 'Sri Balaji Co.', amount: '', notes: '', collectedDate: 'Today' })
         }} className="space-y-4">
           <FormField label="Paying Customer">
             <select
@@ -625,7 +619,7 @@ export default function SalesPage() {
               onChange={e => setNewCollection({ ...newCollection, amount: e.target.value })}
             />
           </FormField>
-          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300">
+          <div className="p-3 bg-zinc-100 border border-zinc-200 rounded-xl text-xs text-zinc-800">
             ⚠️ <strong>Admin Verification Rule (Section 11.8):</strong> The customer outstanding ledger will not reduce until Admin physically verifies the handed-over currency.
           </div>
           <div className="flex justify-end gap-2 pt-2">

@@ -42,6 +42,17 @@ services:
     volumes:
       - tom_uploads:/app/uploads
 
+  frontend:
+    build:
+      context: ./tom-frontend
+      dockerfile: Dockerfile
+    container_name: tom-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
 volumes:
   tom_mysql_data:
   tom_uploads:

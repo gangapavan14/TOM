@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
+import { OperationalDataProvider } from './context/OperationalDataContext'
 import { ProtectedRoute } from './components/ui/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
 
@@ -21,6 +22,51 @@ import AuditPage from './pages/audit/AuditPage'
 import SettingsPage from './pages/settings/SettingsPage'
 import B2CCataloguePage from './pages/catalogue/B2CCataloguePage'
 import DocumentsPage from './pages/documents/DocumentsPage'
+import React, { Component } from 'react'
+import FloorOperationsPage from './pages/floor/FloorOperationsPage'
+
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught error:", error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center text-xl font-bold text-zinc-950 shadow-sm">
+            !
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-zinc-950 font-sans tracking-tight">Console Sync Required</h2>
+            <p className="text-sm text-zinc-600 max-w-md mx-auto mt-1">
+              Click below to reload and continue your work.
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              this.setState({ hasError: false })
+              window.location.reload()
+            }}
+            className="btn-primary text-xs px-4 py-2"
+          >
+            Reload Console
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 function LayoutRoute({ children, allowedRoles, permission }) {
   return (
@@ -32,8 +78,10 @@ function LayoutRoute({ children, allowedRoles, permission }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <ErrorBoundary>
+      <AuthProvider>
+        <OperationalDataProvider>
+        <BrowserRouter>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -83,6 +131,16 @@ export default function App() {
             element={
               <LayoutRoute allowedRoles={['ADMIN', 'SENIOR_WORKER', 'WORKER']}>
                 <ProcessingPage />
+              </LayoutRoute>
+            }
+          />
+
+          {/* Operations: Senior Worker Floor Tasks & Cockpit — Admin, Senior Worker, Worker, Office */}
+          <Route
+            path="/floor-operations"
+            element={
+              <LayoutRoute allowedRoles={['ADMIN', 'SENIOR_WORKER', 'WORKER', 'OFFICE_EMPLOYEE']}>
+                <FloorOperationsPage />
               </LayoutRoute>
             }
           />
@@ -201,6 +259,8 @@ export default function App() {
           <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
-  )
+    </OperationalDataProvider>
+  </AuthProvider>
+</ErrorBoundary>
+)
 }

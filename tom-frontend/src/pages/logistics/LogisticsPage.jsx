@@ -110,7 +110,7 @@ export default function LogisticsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">Logistics & Weighbridge</h1>
+          <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-display">Logistics & Weighbridge</h1>
           <p className="page-sub text-zinc-400 text-sm mt-1">Real-time yard tracking, electronic weighbridge gross/tare measurement & gate pass dispatch</p>
         </div>
         <button onClick={() => setModalOpen(true)} className="btn-primary">
@@ -129,8 +129,8 @@ export default function LogisticsPage() {
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-xl flex-shrink-0">{s.icon}</div>
             <div>
-              <p className="text-2xl font-extrabold font-display text-white">{s.value}</p>
-              <p className="text-xs font-semibold text-zinc-300">{s.label}</p>
+              <p className="text-2xl font-extrabold font-display text-zinc-950">{s.value}</p>
+              <p className="text-xs font-bold text-zinc-900 uppercase tracking-wider">{s.label}</p>
               <p className="text-[11px] text-zinc-500 mt-0.5">{s.sub}</p>
             </div>
           </div>
@@ -138,13 +138,13 @@ export default function LogisticsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-2 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-zinc-100 p-1 rounded-xl w-fit">
         {['weighbridge', 'yard'].map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-              tab === t ? 'bg-surface-3 text-white shadow-sm' : 'text-zinc-500 hover:text-white'
+              tab === t ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-950'
             }`}
           >
             {t === 'weighbridge' ? 'Weighbridge Slips' : 'Yard & Gate Status'}
@@ -180,13 +180,13 @@ export default function LogisticsPage() {
               </thead>
               <tbody>
                 {filteredTickets.map(t => (
-                  <tr key={t.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-mono text-xs text-amber-400 font-semibold whitespace-nowrap">{t.id}</td>
+                  <tr key={t.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-mono text-xs text-zinc-950 font-bold whitespace-nowrap">{t.id}</td>
                     <td className="whitespace-nowrap">
-                      <div className="font-semibold text-white">{t.vehicleNo}</div>
+                      <div className="font-semibold text-zinc-900">{t.vehicleNo}</div>
                       <div className="text-xs text-zinc-400">{t.driver} • {t.phone}</div>
                     </td>
-                    <td className="text-zinc-200 font-medium whitespace-nowrap">{t.material}</td>
+                    <td className="text-zinc-800 font-medium whitespace-nowrap">{t.material}</td>
                     <td className="text-right font-mono text-zinc-400 whitespace-nowrap">{t.grossWt.toLocaleString()}</td>
                     <td className="text-right font-mono text-zinc-400 whitespace-nowrap">{t.tareWt.toLocaleString()}</td>
                     <td className="text-right font-mono font-bold text-emerald-400 whitespace-nowrap">
@@ -210,12 +210,12 @@ export default function LogisticsPage() {
                 <span className="font-mono text-xs text-zinc-400 font-semibold">{v.id}</span>
                 <Badge variant={statusVariant(v.status)}>{v.status}</Badge>
               </div>
-              <h3 className="text-base font-bold text-white">{v.vehicleNo}</h3>
+              <h3 className="text-base font-bold text-zinc-950">{v.vehicleNo}</h3>
               <p className="text-xs text-zinc-400 mb-3">{v.type}</p>
-              <div className="space-y-1.5 text-xs text-zinc-300 pt-2 border-t border-white/5">
+              <div className="space-y-1.5 text-xs text-zinc-700 pt-2 border-t border-white/5">
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Driver:</span>
-                  <span className="font-medium text-white">{v.driver}</span>
+                  <span className="font-medium text-zinc-900">{v.driver}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Current Bay:</span>

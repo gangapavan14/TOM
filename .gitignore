@@ -25,5 +25,11 @@ tom-frontend/node_modules/
 Thumbs.db
 .DS_Store
 
-# Tooling repository
+# Tooling & scratch files
 gstack-repo/
+scratch/
+audit_*.png
+dashboard_*.png
+qa_*.png
+login_audit.png
+swagger_ui_audit.png

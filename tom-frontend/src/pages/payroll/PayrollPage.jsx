@@ -45,7 +45,7 @@ export default function PayrollPage() {
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-xl">{s.icon}</div>
             <div>
-              <p className="text-2xl font-extrabold font-display text-white">{s.value}</p>
+              <p className="text-2xl font-extrabold font-display text-zinc-950">{s.value}</p>
               <p className="text-xs text-zinc-500">{s.label}</p>
             </div>
           </div>
@@ -68,7 +68,7 @@ export default function PayrollPage() {
                 <th className="text-center">Days</th>
                 <th className="text-right">OT (₹)</th>
                 <th className="text-right">Deductions (₹)</th>
-                <th className="text-right font-bold text-white">Net Pay (₹)</th>
+                <th className="text-right font-bold text-zinc-950">Net Pay (₹)</th>
                 <th>Disbursement</th>
                 <th>Slip</th>
               </tr>
@@ -77,13 +77,13 @@ export default function PayrollPage() {
               {payrolls.map(p => (
                 <tr key={p.id}>
                   <td className="font-mono text-xs text-brand-400">{p.id}</td>
-                  <td className="font-semibold text-white">{p.name}</td>
+                  <td className="font-semibold text-zinc-900">{p.name}</td>
                   <td className="text-xs text-zinc-400">{p.role.replace('_', ' ')}</td>
                   <td className="text-right font-mono text-zinc-400">{p.baseSalary.toLocaleString('en-IN')}</td>
-                  <td className="text-center font-mono text-zinc-300">{p.daysWorked} / 26</td>
+                  <td className="text-center font-mono text-zinc-700">{p.daysWorked} / 26</td>
                   <td className="text-right font-mono text-emerald-400">+{p.overtime.toLocaleString('en-IN')}</td>
                   <td className="text-right font-mono text-red-400">-{p.deductions.toLocaleString('en-IN')}</td>
-                  <td className="text-right font-mono font-bold text-amber-300 text-sm">{p.netPay.toLocaleString('en-IN')}</td>
+                  <td className="text-right font-mono font-bold text-zinc-800 text-sm">{p.netPay.toLocaleString('en-IN')}</td>
                   <td>
                     <Badge variant={p.status === 'PAID' ? 'success' : p.status === 'GENERATED' ? 'info' : 'warning'}>
                       {p.status}

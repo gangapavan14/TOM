@@ -61,7 +61,7 @@ export default function ProcessingPage() {
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-xl">{s.icon}</div>
             <div>
-              <p className="text-2xl font-extrabold font-display text-white">{s.value}</p>
+              <p className="text-2xl font-extrabold font-display text-zinc-950">{s.value}</p>
               <p className="text-xs text-zinc-500">{s.label}</p>
             </div>
           </div>
@@ -69,13 +69,13 @@ export default function ProcessingPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-2 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-zinc-100 p-1 rounded-xl w-fit">
         {['machines', 'runs'].map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-              tab === t ? 'bg-surface-3 text-white' : 'text-zinc-500 hover:text-white'
+              tab === t ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-950'
             }`}
           >
             {t === 'machines' ? 'Expeller Units & Telemetry' : 'Production Batches (Mass Balance)'}
@@ -93,7 +93,7 @@ export default function ProcessingPage() {
                     <span className="font-mono text-xs text-zinc-500">{m.id}</span>
                     <Badge variant={m.status === 'RUNNING' ? 'success' : 'muted'}>{m.status}</Badge>
                   </div>
-                  <h3 className="font-bold text-white text-base mt-1">{m.name}</h3>
+                  <h3 className="font-bold text-zinc-950 text-base mt-1">{m.name}</h3>
                 </div>
               </div>
 
@@ -104,7 +104,7 @@ export default function ProcessingPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Barrel Temperature:</span>
-                  <span className="font-mono text-amber-400">{m.temp}</span>
+                  <span className="font-mono text-zinc-900">{m.temp}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Motor Load:</span>
@@ -112,7 +112,7 @@ export default function ProcessingPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Output Rate:</span>
-                  <span className="font-semibold text-white">{m.outputPerHour}</span>
+                  <span className="font-semibold text-zinc-900">{m.outputPerHour}</span>
                 </div>
               </div>
 
@@ -120,11 +120,11 @@ export default function ProcessingPage() {
                 <button
                   onClick={() => toggleMachine(m.id)}
                   className={`btn-secondary text-xs w-full justify-center ${
-                    m.status === 'RUNNING' ? 'hover:text-amber-400' : 'hover:text-emerald-400'
+                    m.status === 'RUNNING' ? 'hover:text-zinc-900' : 'hover:text-emerald-400'
                   }`}
                 >
                   {m.status === 'RUNNING' ? (
-                    <><Pause size={14} className="text-amber-400" /> Put Machine on Standby</>
+                    <><Pause size={14} className="text-zinc-900" /> Put Machine on Standby</>
                   ) : (
                     <><Play size={14} className="text-emerald-400" /> Start Expeller Motor</>
                   )}
@@ -155,9 +155,9 @@ export default function ProcessingPage() {
                 {mockRuns.map(r => (
                   <tr key={r.id}>
                     <td className="font-mono text-xs text-brand-400">{r.id}</td>
-                    <td className="font-semibold text-white">{r.seedInput}</td>
-                    <td className="font-semibold text-amber-400">{r.crudeOil}</td>
-                    <td className="text-zinc-300">{r.cakeOutput}</td>
+                    <td className="font-semibold text-zinc-900">{r.seedInput}</td>
+                    <td className="font-semibold text-zinc-900">{r.crudeOil}</td>
+                    <td className="text-zinc-700">{r.cakeOutput}</td>
                     <td className="text-zinc-500">{r.wasteLoss}</td>
                     <td>
                       <div className="text-white text-xs">{r.shift}</div>

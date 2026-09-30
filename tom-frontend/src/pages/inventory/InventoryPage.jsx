@@ -1,8 +1,20 @@
 import { useState, useEffect } from 'react'
 import { Card, CardHeader, Badge, EmptyState, Modal, FormField } from '../../components/ui'
+import { useAuth } from '../../context/AuthContext'
+import { useOperationalData } from '../../context/OperationalDataContext'
 import { inventoryApi } from '../../api/endpoints'
-import { Plus, Search, Package, Layers, Truck, ArrowRight, AlertTriangle, TrendingDown, Scale } from 'lucide-react'
+import {
+  Plus, Search, Package, Layers, Truck, ArrowRight, AlertTriangle,
+  TrendingDown, Scale, ShieldCheck, Lock, CheckCircle2, Info, Eye, Shield
+} from 'lucide-react'
 import toast from 'react-hot-toast'
+
+const WAREHOUSE_ROOMS = {
+  'Warehouse 1 (Hero: Turmeric)': ['Quality Room 1A', 'Room 1B (Curing)', 'Polished Stock 1C'],
+  'Warehouse 2 (Hero: Maize)': ['Silo 2A', 'Stack Room 2B'],
+  'Warehouse 3 (Hero: Til/Sesame)': ['Room 3A (A-Grade)', 'Room 3B (Commercial)'],
+  'General Godown 4 (Oil Cake & By-products)': ['Cotton Cake Bay', 'Husk & Spares'],
+}
 
 const initialBatches = [
   {
@@ -108,9 +120,12 @@ const initialLossRecords = [
 ]
 
 export default function InventoryPage() {
+  const { user } = useAuth()
+  const canManageStock = user?.role === 'ADMIN' || user?.role === 'FIELD_OFFICER'
+
   const [tab, setTab] = useState('batches')
   const [search, setSearch] = useState('')
-  const [batches, setBatches] = useState(initialBatches)
+  const { batches, recordStockInflow, logStockLoss } = useOperationalData()
   const [warehouses, setWarehouses] = useState(initialWarehouses)
   const [transfers, setTransfers] = useState(initialTransfers)
   const [lossRecords, setLossRecords] = useState(initialLossRecords)
@@ -124,13 +139,15 @@ export default function InventoryPage() {
 
   // Forms
   const [inflowForm, setInflowForm] = useState({
-    commodity: 'Turmeric',
-    grade: 'A+',
+    commodity: 'Turmeric Raw',
+    grade: 'A',
     warehouse: 'Warehouse 1 (Hero: Turmeric)',
     room: 'Quality Room 1A',
     bags: 50,
     kgPerBag: 50,
     costPerKg: 125,
+    processingCost: 2000,
+    transportCost: 3000,
   })
 
   const [transferForm, setTransferForm] = useState({
@@ -149,16 +166,41 @@ export default function InventoryPage() {
     notes: 'Natural weight reduction observed after 48h curing'
   })
 
-  // Stock Inflow submission
-  const handleInflowSubmit = (e) => {
+  // Stock Inflow submission (Admin & Field Officer only)
+  const handleInflowSubmit = async (e) => {
     e.preventDefault()
+    if (!canManageStock) {
+      toast.error('Unauthorized: Only Admin and Field Officer can record stock.')
+      return
+    }
+
     const bagsCount = parseInt(inflowForm.bags) || 0
-    const totalKg = bagsCount * (parseFloat(inflowForm.kgPerBag) || 50)
+    const kgBag = parseFloat(inflowForm.kgPerBag) || 50
+    const totalKg = bagsCount * kgBag
     const rate = parseFloat(inflowForm.costPerKg) || 120
     const pCost = totalKg * rate
+    const procCost = parseFloat(inflowForm.processingCost) || 0
+    const trCost = parseFloat(inflowForm.transportCost) || 0
+    const totCost = pCost + procCost + trCost
+    const effCost = totalKg > 0 ? parseFloat((totCost / totalKg).toFixed(2)) : 0
+
+    // Commodity code prefix for permanent bag IDs (Rule 5: location independent)
+    const codePrefix = {
+      'Turmeric Fingers': 'TUR',
+      'Turmeric Raw': 'TUR',
+      'Maize Grain': 'MAI',
+      'Sesame Seed': 'SES',
+      'Cotton Seed': 'COT',
+      'Sunflower Seed': 'SUN',
+      'Neem Seed': 'NEE',
+      'Groundnut Pods': 'GND',
+    }[inflowForm.commodity] || 'STK'
+
+    const dStr = new Date().toISOString().slice(2, 10).replace(/-/g, '')
+    const batchCode = `${codePrefix}-${dStr}-${Math.floor(100 + Math.random() * 900)}`
 
     const newBatch = {
-      id: `TUR-${Date.now().toString().slice(-6)}`,
+      id: batchCode,
       commodity: inflowForm.commodity,
       grade: inflowForm.grade,
       warehouse: inflowForm.warehouse,
@@ -167,15 +209,29 @@ export default function InventoryPage() {
       currentKg: totalKg,
       originalKg: totalKg,
       purchaseCost: pCost,
-      processingCost: 2000,
-      transportCost: 3000,
-      totalCost: pCost + 5000,
-      effectiveCostPerKg: parseFloat(((pCost + 5000) / totalKg).toFixed(2)),
+      processingCost: procCost,
+      transportCost: trCost,
+      totalCost: totCost,
+      effectiveCostPerKg: effCost,
       status: 'IN_STOCK'
     }
 
-    setBatches([newBatch, ...batches])
-    toast.success(`Inward Batch #${newBatch.id} stocked in ${newBatch.warehouse}! Permanent bag tags generated.`)
+    try {
+      await inventoryApi.createBatch({
+        batchCode: newBatch.id,
+        commodity: newBatch.commodity,
+        grade: newBatch.grade,
+        roomSection: newBatch.room,
+        bags: newBatch.bags,
+        totalKg: newBatch.currentKg,
+        costPerKg: newBatch.effectiveCostPerKg,
+        status: 'IN_STOCK'
+      }).catch(err => console.warn('Backend sync fallback', err))
+    } catch (err) {
+      // offline fallback
+    }
+
+    recordStockInflow(newBatch)
     setShowInflowModal(false)
   }
 
@@ -213,11 +269,7 @@ export default function InventoryPage() {
     const updatedKg = targetBatch.currentKg - lossKg
     const newEffectiveCost = parseFloat((targetBatch.totalCost / updatedKg).toFixed(2))
 
-    setBatches(batches.map(b => b.id === targetBatch.id ? {
-      ...b,
-      currentKg: updatedKg,
-      effectiveCostPerKg: newEffectiveCost
-    } : b))
+    logStockLoss(targetBatch.id, lossKg, lossForm.reason)
 
     const newLoss = {
       id: `LOSS-00${lossRecords.length + 1}`,
@@ -232,7 +284,6 @@ export default function InventoryPage() {
     }
 
     setLossRecords([newLoss, ...lossRecords])
-    toast.success(`Stock adjusted for ${targetBatch.id}: Effective cost recalculated from ₹${prevCost} to ₹${newEffectiveCost}/kg!`)
     setShowLossModal(false)
   }
 
@@ -245,38 +296,65 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">Inventory & Godown Management</h1>
-          <p className="page-sub text-zinc-400 text-sm mt-1">
+          <div className="flex items-center gap-2">
+            <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-sans">
+              Inventory & Godown Management
+            </h1>
+            <Badge variant="brand">Section 9</Badge>
+          </div>
+          <p className="page-sub text-zinc-500 text-sm mt-1">
             Section 9: Permanent Bag IDs, Hero Warehouses, Multi-step Transfers & Dynamic Batch Costing
           </p>
         </div>
-        <div className="flex gap-2">
-          <button className="btn-secondary" onClick={() => setShowLossModal(true)}>
-            <TrendingDown size={15} /> Log Weight Loss / Spoilage
-          </button>
-          <button className="btn-secondary" onClick={() => setShowTransferModal(true)}>
-            <Truck size={15} /> Request Stock Transfer
-          </button>
-          <button className="btn-primary" onClick={() => setShowInflowModal(true)}>
-            <Plus size={16} /> Record Stock Inflow
-          </button>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {canManageStock ? (
+            <>
+              <button
+                className="btn-secondary"
+                onClick={() => setShowLossModal(true)}
+              >
+                <TrendingDown size={15} />
+                <span>Log Weight Loss / Spoilage</span>
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => setShowTransferModal(true)}
+              >
+                <Truck size={15} />
+                <span>Request Stock Transfer</span>
+              </button>
+              <button
+                className="btn-primary"
+                onClick={() => setShowInflowModal(true)}
+              >
+                <Plus size={16} />
+                <span>Record Stock Inflow</span>
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-100 border border-zinc-200 text-xs text-zinc-700 font-medium shadow-sm">
+              <Lock size={14} className="text-zinc-600 flex-shrink-0" />
+              <span>Read-Only Godown Access (Recording & editing restricted to Admin & Field Officer)</span>
+            </div>
+          )}
         </div>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Batches in Godowns', value: batches.length, icon: '📦', color: 'text-blue-400 bg-blue-500/10' },
-          { label: 'Current Sellable Stock', value: `${(batches.reduce((s, r) => s + r.currentKg, 0) / 1000).toFixed(1)} t`, icon: '⚖️', color: 'text-emerald-400 bg-emerald-500/10' },
-          { label: 'Active Transfers', value: transfers.filter(t => t.status !== 'COMPLETED').length, icon: '🚚', color: 'text-amber-400 bg-amber-500/10' },
-          { label: 'Loss & Spoilage Logged', value: `${lossRecords.reduce((s, l) => s + l.lossKg, 0)} kg`, icon: '📉', color: 'text-red-400 bg-red-500/10' },
+          { label: 'Total Batches in Godowns', value: batches.length, icon: '📦', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Current Sellable Stock', value: `${(batches.reduce((s, r) => s + r.currentKg, 0) / 1000).toFixed(1)} t`, icon: '⚖️', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Active Transfers', value: transfers.filter(t => t.status !== 'COMPLETED').length, icon: '🚚', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Loss & Spoilage Logged', value: `${lossRecords.reduce((s, l) => s + l.lossKg, 0)} kg`, icon: '📉', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
         ].map(s => (
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl ${s.color} flex items-center justify-center text-xl flex-shrink-0`}>{s.icon}</div>
             <div>
-              <p className="text-2xl font-extrabold font-display text-white">{s.value}</p>
+              <p className="text-2xl font-extrabold font-display text-zinc-950">{s.value}</p>
               <p className="text-xs text-zinc-500">{s.label}</p>
             </div>
           </div>
@@ -284,10 +362,10 @@ export default function InventoryPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-2 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-zinc-100 p-1 rounded-xl w-fit">
         {['batches', 'warehouses', 'transfers', 'spoilage'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-surface-3 text-white' : 'text-zinc-500 hover:text-white'}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-950'}`}>
             {t === 'batches' ? '1. Stock Batches & Costing' : t === 'warehouses' ? '2. Hero Godowns & Rooms' : t === 'transfers' ? '3. Stock Movement Transactions' : '4. Spoilage & Weight Loss'}
           </button>
         ))}
@@ -318,23 +396,23 @@ export default function InventoryPage() {
               </thead>
               <tbody>
                 {filtered.map(r => (
-                  <tr key={r.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-mono text-xs text-amber-400 font-semibold">{r.id}</td>
-                    <td className="font-semibold text-white">{r.commodity}</td>
+                  <tr key={r.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-mono text-xs text-zinc-950 font-bold">{r.id}</td>
+                    <td className="font-semibold text-zinc-900">{r.commodity}</td>
                     <td><Badge variant={gradeVariant(r.grade)}>{r.grade}</Badge></td>
                     <td className="text-zinc-400 text-xs">{r.warehouse} — {r.room}</td>
-                    <td className="text-right font-mono text-zinc-200">{r.bags}</td>
-                    <td className="text-right font-mono text-zinc-200">
+                    <td className="text-right font-mono text-zinc-900">{r.bags}</td>
+                    <td className="text-right font-mono text-zinc-900">
                       {r.currentKg.toLocaleString('en-IN')} kg
                       {r.currentKg < r.originalKg && (
                         <span className="block text-[10px] text-red-400">(-{r.originalKg - r.currentKg} kg drying)</span>
                       )}
                     </td>
                     <td className="text-right">
-                      <span className="font-mono font-bold text-amber-300">₹{r.effectiveCostPerKg.toFixed(2)}</span>
+                      <span className="font-mono font-bold text-zinc-800">₹{r.effectiveCostPerKg.toFixed(2)}</span>
                       <button
                         onClick={() => setSelectedBatchForCosting(r)}
-                        className="block text-[10px] text-zinc-400 hover:text-white ml-auto"
+                        className="block text-[10px] text-zinc-400 hover:text-zinc-950 ml-auto"
                       >
                         Costing Breakdown →
                       </button>
@@ -343,7 +421,7 @@ export default function InventoryPage() {
                     <td className="text-right">
                       <button
                         onClick={() => setSelectedBatchForBags(r)}
-                        className="btn-ghost text-xs py-1 px-2.5 text-zinc-300 hover:text-white"
+                        className="btn-ghost text-xs py-1 px-2.5 text-zinc-700 hover:text-zinc-950"
                       >
                         View Bags
                       </button>
@@ -363,20 +441,20 @@ export default function InventoryPage() {
             <Card key={w.name} className="p-6 space-y-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">{w.type} Warehouse</span>
-                  <h3 className="font-display font-bold text-white text-lg mt-0.5">{w.name}</h3>
+                  <span className="text-[10px] font-bold text-zinc-900 uppercase tracking-widest">{w.type} Warehouse</span>
+                  <h3 className="font-display font-bold text-zinc-950 text-lg mt-0.5">{w.name}</h3>
                   <p className="text-zinc-400 text-xs mt-1">Dedicated quality rooms for {w.commodity}</p>
                 </div>
                 <span className="text-3xl">🏭</span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-surface-2 rounded-xl text-center">
-                  <p className="text-2xl font-bold font-mono text-white">{w.totalBags}</p>
+                <div className="p-3 bg-zinc-100 rounded-xl text-center">
+                  <p className="text-2xl font-bold font-mono text-zinc-950">{w.totalBags}</p>
                   <p className="text-[11px] text-zinc-500">Stored Bags</p>
                 </div>
-                <div className="p-3 bg-surface-2 rounded-xl text-center">
-                  <p className="text-2xl font-bold font-mono text-amber-400">{(w.totalKg / 1000).toFixed(1)} t</p>
+                <div className="p-3 bg-zinc-100 rounded-xl text-center">
+                  <p className="text-2xl font-bold font-mono text-zinc-900">{(w.totalKg / 1000).toFixed(1)} t</p>
                   <p className="text-[11px] text-zinc-500">Current Mass</p>
                 </div>
               </div>
@@ -385,7 +463,7 @@ export default function InventoryPage() {
                 <p className="text-xs font-semibold text-zinc-400 mb-2">Quality Inspection Rooms:</p>
                 <div className="flex flex-wrap gap-2">
                   {w.rooms.map(rm => (
-                    <span key={rm} className="px-2.5 py-1 bg-surface-3 border border-white/5 rounded-lg text-xs text-zinc-300 font-mono">
+                    <span key={rm} className="px-2.5 py-1 bg-zinc-200 border border-white/5 rounded-lg text-xs text-zinc-700 font-mono">
                       ✓ {rm}
                     </span>
                   ))}
@@ -418,15 +496,15 @@ export default function InventoryPage() {
               </thead>
               <tbody>
                 {transfers.map(tr => (
-                  <tr key={tr.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-mono text-xs text-amber-400 font-semibold">{tr.id}</td>
-                    <td className="font-semibold text-white">{tr.batchCode}</td>
-                    <td className="text-xs text-zinc-300">
+                  <tr key={tr.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-mono text-xs text-zinc-950 font-bold">{tr.id}</td>
+                    <td className="font-semibold text-zinc-900">{tr.batchCode}</td>
+                    <td className="text-xs text-zinc-700">
                       <div>From: {tr.fromWh}</div>
-                      <div className="text-amber-400">To: {tr.toWh}</div>
+                      <div className="text-zinc-900">To: {tr.toWh}</div>
                     </td>
-                    <td className="text-right font-mono text-zinc-200">{tr.weightKg} kg ({tr.bags} bags)</td>
-                    <td className="text-xs text-zinc-300 font-mono">
+                    <td className="text-right font-mono text-zinc-900">{tr.weightKg} kg ({tr.bags} bags)</td>
+                    <td className="text-xs text-zinc-700 font-mono">
                       <div>{tr.vehicleNo}</div>
                       <div className="text-zinc-500">{tr.driver}</div>
                     </td>
@@ -478,13 +556,13 @@ export default function InventoryPage() {
               </thead>
               <tbody>
                 {lossRecords.map(l => (
-                  <tr key={l.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={l.id} className="hover:bg-zinc-50/80 transition-colors">
                     <td className="font-mono text-xs text-red-400 font-semibold">{l.id}</td>
-                    <td className="font-semibold text-white">{l.batchCode}</td>
-                    <td className="text-zinc-300 text-xs">{l.reason}</td>
+                    <td className="font-semibold text-zinc-900">{l.batchCode}</td>
+                    <td className="text-zinc-700 text-xs">{l.reason}</td>
                     <td className="text-right font-mono text-red-400 font-bold">-{l.lossKg} kg</td>
                     <td className="text-right font-mono text-zinc-400">₹{l.previousEffectiveCost.toFixed(2)}</td>
-                    <td className="text-right font-mono font-bold text-amber-300">₹{l.newEffectiveCost.toFixed(2)}/kg</td>
+                    <td className="text-right font-mono font-bold text-zinc-800">₹{l.newEffectiveCost.toFixed(2)}/kg</td>
                     <td className="text-zinc-400 text-xs">{l.reportedBy}</td>
                     <td className="text-zinc-500 text-xs">{l.date}</td>
                   </tr>
@@ -502,13 +580,13 @@ export default function InventoryPage() {
         title={`Permanent Bag Identification — ${selectedBatchForBags?.id}`}
       >
         <div className="space-y-4">
-          <div className="p-3 bg-surface-3 rounded-xl flex items-center justify-between text-xs text-zinc-300">
+          <div className="p-3 bg-zinc-200 rounded-xl flex items-center justify-between text-xs text-zinc-700">
             <div><strong>Commodity:</strong> {selectedBatchForBags?.commodity} ({selectedBatchForBags?.grade})</div>
             <div><strong>Total Bags:</strong> {selectedBatchForBags?.bags}</div>
             <div><strong>Warehouse:</strong> {selectedBatchForBags?.warehouse}</div>
           </div>
 
-          <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300">
+          <div className="p-2 bg-zinc-100 border border-zinc-200 rounded-xl text-xs text-zinc-800">
             🏷️ <strong>Permanent Bag ID Rule (Section 9.2):</strong> Format <code>TUR-260926-001-001</code> is permanent and location-independent.
           </div>
 
@@ -516,13 +594,13 @@ export default function InventoryPage() {
             {Array.from({ length: Math.min(selectedBatchForBags?.bags || 5, 8) }).map((_, i) => {
               const bagId = `${selectedBatchForBags?.id}-${(i + 1).toString().padStart(3, '0')}`
               return (
-                <div key={i} className="flex items-center justify-between p-2.5 bg-surface-2 border border-white/5 rounded-lg text-xs">
+                <div key={i} className="flex items-center justify-between p-2.5 bg-zinc-100 border border-white/5 rounded-lg text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-amber-400 font-bold">{bagId}</span>
+                    <span className="font-mono text-zinc-950 font-bold">{bagId}</span>
                     <span className="text-zinc-500">| 50kg Standard Bag</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-mono text-zinc-200">50.0 kg</span>
+                    <span className="font-mono text-zinc-900">50.0 kg</span>
                     <span className="text-emerald-400 font-semibold">✓ Permanent Tag</span>
                   </div>
                 </div>
@@ -543,30 +621,30 @@ export default function InventoryPage() {
         title={`Batch Costing & Effective Rate — ${selectedBatchForCosting?.id}`}
       >
         <div className="space-y-4">
-          <div className="p-4 bg-surface-3 rounded-xl space-y-2 text-xs">
+          <div className="p-4 bg-zinc-200 rounded-xl space-y-2 text-xs">
             <div className="flex justify-between">
               <span className="text-zinc-400">Purchase Raw Cost:</span>
-              <span className="font-mono text-white font-semibold">₹ {selectedBatchForCosting?.purchaseCost?.toLocaleString('en-IN')}</span>
+              <span className="font-mono text-zinc-900 font-semibold">₹ {selectedBatchForCosting?.purchaseCost?.toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">+ Processing & Curing Cost:</span>
-              <span className="font-mono text-white font-semibold">₹ {selectedBatchForCosting?.processingCost?.toLocaleString('en-IN')}</span>
+              <span className="font-mono text-zinc-900 font-semibold">₹ {selectedBatchForCosting?.processingCost?.toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">+ Transportation / Freight:</span>
-              <span className="font-mono text-white font-semibold">₹ {selectedBatchForCosting?.transportCost?.toLocaleString('en-IN')}</span>
+              <span className="font-mono text-zinc-900 font-semibold">₹ {selectedBatchForCosting?.transportCost?.toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between pt-2 border-t border-white/5 font-bold">
-              <span className="text-zinc-300">Total Batch Cost:</span>
+              <span className="text-zinc-700">Total Batch Cost:</span>
               <span className="font-mono text-emerald-400">₹ {selectedBatchForCosting?.totalCost?.toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Current Sellable Mass:</span>
-              <span className="font-mono text-white">{selectedBatchForCosting?.currentKg} kg</span>
+              <span className="font-mono text-zinc-900">{selectedBatchForCosting?.currentKg} kg</span>
             </div>
             <div className="flex justify-between pt-2 border-t border-white/5 items-center">
-              <span className="text-amber-400 font-bold">Effective Cost / kg:</span>
-              <span className="font-mono text-amber-300 font-extrabold text-base">₹ {selectedBatchForCosting?.effectiveCostPerKg?.toFixed(2)} / kg</span>
+              <span className="text-zinc-950 font-bold">Effective Cost / kg:</span>
+              <span className="font-mono text-zinc-950 font-bold text-base">₹ {selectedBatchForCosting?.effectiveCostPerKg?.toFixed(2)} / kg</span>
             </div>
           </div>
           <div className="flex justify-end pt-2">
@@ -617,7 +695,7 @@ export default function InventoryPage() {
             />
           </FormField>
 
-          <div className="p-3 bg-surface-3 rounded-xl text-xs text-zinc-300 space-y-1">
+          <div className="p-3 bg-zinc-200 rounded-xl text-xs text-zinc-700 space-y-1">
             <p><strong>Note on Effective Costing:</strong></p>
             <p className="text-zinc-400">Total batch expense remains constant while sellable mass decreases. The system will dynamically recalculate the batch's effective cost per kg upon submission.</p>
           </div>
@@ -663,7 +741,7 @@ export default function InventoryPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <FormField label="Source Godown">
-              <input disabled className="tom-input bg-surface-2 text-zinc-400" value={transferForm.fromWh} />
+              <input disabled className="tom-input bg-zinc-100 text-zinc-400" value={transferForm.fromWh} />
             </FormField>
             <FormField label="Destination Godown">
               <select
@@ -711,6 +789,201 @@ export default function InventoryPage() {
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={() => setShowTransferModal(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">Initialize Transfer Request</button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal: Record Physical Stock Inflow (Admin & Field Officer only) */}
+      <Modal
+        open={showInflowModal}
+        onClose={() => setShowInflowModal(false)}
+        title="Record Physical Stock Inflow (Inward Batch)"
+      >
+        <form onSubmit={handleInflowSubmit} className="space-y-4">
+          <div className="p-3.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs text-zinc-700 flex items-start gap-2.5">
+            <ShieldCheck size={16} className="text-zinc-950 flex-shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-bold text-zinc-950">Invariant Rule 1, 4 & 5 Verification Guard</p>
+              <p className="text-zinc-600 leading-relaxed">
+                Stock is not inventory merely because an entry is made. Grade D is strictly eliminated (rejected stock never enters inventory). Permanent Bag IDs are location-independent.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <FormField label="Commodity Inward">
+              <select
+                className="tom-select"
+                value={inflowForm.commodity}
+                onChange={e => {
+                  const comm = e.target.value
+                  let defaultWh = 'Warehouse 1 (Hero: Turmeric)'
+                  if (comm.includes('Maize')) defaultWh = 'Warehouse 2 (Hero: Maize)'
+                  else if (comm.includes('Sesame')) defaultWh = 'Warehouse 3 (Hero: Til/Sesame)'
+                  else if (comm.includes('Cake') || comm.includes('Seed') || comm.includes('Pods')) defaultWh = 'General Godown 4 (Oil Cake & By-products)'
+
+                  setInflowForm({
+                    ...inflowForm,
+                    commodity: comm,
+                    warehouse: defaultWh,
+                    room: (WAREHOUSE_ROOMS[defaultWh] || [])[0] || 'Room A'
+                  })
+                }}
+              >
+                <option value="Turmeric Raw">Turmeric Raw (Unpolished)</option>
+                <option value="Turmeric Fingers">Turmeric Fingers (Polished A+)</option>
+                <option value="Maize Grain">Maize Grain (High Starch)</option>
+                <option value="Sesame Seed">Sesame Seed (White Til)</option>
+                <option value="Cotton Seed">Raw Cotton Seed</option>
+                <option value="Sunflower Seed">Sunflower Seed (Oil Grade)</option>
+                <option value="Neem Seed">Neem Seed</option>
+                <option value="Groundnut Pods">Groundnut Pods</option>
+              </select>
+            </FormField>
+
+            <FormField label="Quality Grade (Rule 4: Grade D Eliminated)">
+              <select
+                className="tom-select font-semibold"
+                value={inflowForm.grade}
+                onChange={e => setInflowForm({ ...inflowForm, grade: e.target.value })}
+              >
+                <option value="A+">Grade A+ (Premium / Export Grade)</option>
+                <option value="A">Grade A (Standard Mill Specification)</option>
+                <option value="B">Grade B (Commercial Second Grade)</option>
+                <option value="C">Grade C (Low Quality / Discount Grade)</option>
+              </select>
+            </FormField>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <FormField label="Target Godown (Hero Warehouse)">
+              <select
+                className="tom-select"
+                value={inflowForm.warehouse}
+                onChange={e => {
+                  const wh = e.target.value
+                  setInflowForm({
+                    ...inflowForm,
+                    warehouse: wh,
+                    room: (WAREHOUSE_ROOMS[wh] || [])[0] || 'Room A'
+                  })
+                }}
+              >
+                {warehouses.map(w => (
+                  <option key={w.name} value={w.name}>{w.name}</option>
+                ))}
+              </select>
+            </FormField>
+
+            <FormField label="Godown Room / Section">
+              <select
+                className="tom-select"
+                value={inflowForm.room}
+                onChange={e => setInflowForm({ ...inflowForm, room: e.target.value })}
+              >
+                {(WAREHOUSE_ROOMS[inflowForm.warehouse] || ['Room A', 'Room B']).map(rm => (
+                  <option key={rm} value={rm}>{rm}</option>
+                ))}
+              </select>
+            </FormField>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <FormField label="Bags Count">
+              <input
+                required
+                type="number"
+                min="1"
+                className="tom-input font-mono font-bold"
+                value={inflowForm.bags}
+                onChange={e => setInflowForm({ ...inflowForm, bags: e.target.value })}
+              />
+            </FormField>
+
+            <FormField label="Net kg / Bag">
+              <input
+                required
+                type="number"
+                step="0.5"
+                min="1"
+                className="tom-input font-mono"
+                value={inflowForm.kgPerBag}
+                onChange={e => setInflowForm({ ...inflowForm, kgPerBag: e.target.value })}
+              />
+            </FormField>
+
+            <FormField label="Base Rate (₹/kg)">
+              <input
+                required
+                type="number"
+                step="0.1"
+                min="0"
+                className="tom-input font-mono"
+                value={inflowForm.costPerKg}
+                onChange={e => setInflowForm({ ...inflowForm, costPerKg: e.target.value })}
+              />
+            </FormField>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <FormField label="+ Curing & Processing Cost (₹)">
+              <input
+                type="number"
+                min="0"
+                className="tom-input font-mono"
+                value={inflowForm.processingCost}
+                onChange={e => setInflowForm({ ...inflowForm, processingCost: e.target.value })}
+              />
+            </FormField>
+
+            <FormField label="+ Inward Freight & Handling (₹)">
+              <input
+                type="number"
+                min="0"
+                className="tom-input font-mono"
+                value={inflowForm.transportCost}
+                onChange={e => setInflowForm({ ...inflowForm, transportCost: e.target.value })}
+              />
+            </FormField>
+          </div>
+
+          {/* Dynamic Calculated Summary */}
+          <div className="p-3.5 bg-zinc-50 border border-zinc-200 rounded-xl space-y-2 text-xs">
+            <div className="flex justify-between items-center text-zinc-600">
+              <span>Total Batch Net Mass:</span>
+              <span className="font-mono font-bold text-zinc-950 text-sm">
+                {((parseInt(inflowForm.bags) || 0) * (parseFloat(inflowForm.kgPerBag) || 50)).toLocaleString('en-IN')} kg
+              </span>
+            </div>
+            <div className="flex justify-between items-center text-zinc-600">
+              <span>Total Capital Committed:</span>
+              <span className="font-mono font-semibold text-zinc-950">
+                ₹ {((((parseInt(inflowForm.bags) || 0) * (parseFloat(inflowForm.kgPerBag) || 50)) * (parseFloat(inflowForm.costPerKg) || 0)) + (parseFloat(inflowForm.processingCost) || 0) + (parseFloat(inflowForm.transportCost) || 0)).toLocaleString('en-IN')}
+              </span>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-zinc-200">
+              <span className="font-bold text-zinc-950">Effective Cost / kg (Dynamic):</span>
+              <span className="font-mono font-bold text-zinc-950 text-sm">
+                ₹ {(((((parseInt(inflowForm.bags) || 0) * (parseFloat(inflowForm.kgPerBag) || 50)) * (parseFloat(inflowForm.costPerKg) || 0)) + (parseFloat(inflowForm.processingCost) || 0) + (parseFloat(inflowForm.transportCost) || 0)) / Math.max(1, ((parseInt(inflowForm.bags) || 0) * (parseFloat(inflowForm.kgPerBag) || 50)))).toFixed(2)} / kg
+              </span>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setShowInflowModal(false)}
+              className="btn-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary"
+            >
+              <CheckCircle2 size={16} />
+              <span>Record Stock & Generate Tags</span>
+            </button>
           </div>
         </form>
       </Modal>

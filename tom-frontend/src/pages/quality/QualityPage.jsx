@@ -167,7 +167,7 @@ export default function QualityPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">Quality & Lab Inspection</h1>
+          <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-display">Quality & Lab Inspection</h1>
           <p className="page-sub text-zinc-400 text-sm mt-1">
             Section 8.7 & 8.8: Primary factors (Moisture, Colour, Appearance), Grades (A+, A, B, C only), and Partial Acceptance/Rejection
           </p>
@@ -180,15 +180,15 @@ export default function QualityPage() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Samples Tested', value: inspections.length, icon: '🧪', color: 'text-blue-400 bg-blue-500/10' },
-          { label: 'Accepted into Stock', value: `${(totalAcceptedKg / 1000).toFixed(1)} t`, icon: '✅', color: 'text-emerald-400 bg-emerald-500/10' },
-          { label: 'Rejected (Non-payable)', value: `${(totalRejectedKg / 1000).toFixed(1)} t`, icon: '⛔', color: 'text-red-400 bg-red-500/10' },
-          { label: 'Under Processing', value: inspections.filter(i => i.processingRequired).length, icon: '⚙️', color: 'text-amber-400 bg-amber-500/10' }
+          { label: 'Samples Tested', value: inspections.length, icon: '🧪', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Accepted into Stock', value: `${(totalAcceptedKg / 1000).toFixed(1)} t`, icon: '✅', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Rejected (Non-payable)', value: `${(totalRejectedKg / 1000).toFixed(1)} t`, icon: '⛔', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Under Processing', value: inspections.filter(i => i.processingRequired).length, icon: '⚙️', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' }
         ].map(s => (
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl ${s.color} flex items-center justify-center text-xl flex-shrink-0`}>{s.icon}</div>
             <div>
-              <p className="text-2xl font-extrabold font-display text-white">{s.value}</p>
+              <p className="text-2xl font-extrabold font-display text-zinc-950">{s.value}</p>
               <p className="text-xs text-zinc-500">{s.label}</p>
             </div>
           </div>
@@ -196,9 +196,9 @@ export default function QualityPage() {
       </div>
 
       {/* Info Notice about Grade D */}
-      <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300 flex items-center justify-between">
+      <div className="p-3 bg-zinc-100 border border-zinc-200 rounded-xl text-xs text-zinc-800 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <AlertCircle size={15} className="flex-shrink-0 text-amber-400" />
+          <AlertCircle size={15} className="flex-shrink-0 text-zinc-900" />
           <span><strong>Mill Policy Rule (Section 8.7):</strong> There is no Grade D. D-level condition triggers outright rejection. Rejected stock never enters inventory and is not payable.</span>
         </div>
       </div>
@@ -233,11 +233,11 @@ export default function QualityPage() {
             </thead>
             <tbody>
               {filtered.map(t => (
-                <tr key={t.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="font-mono text-xs text-amber-400 font-semibold">{t.id}</td>
-                  <td className="font-semibold text-white">{t.batchCode}</td>
+                <tr key={t.id} className="hover:bg-zinc-50/80 transition-colors">
+                  <td className="font-mono text-xs text-zinc-950 font-bold">{t.id}</td>
+                  <td className="font-semibold text-zinc-900">{t.batchCode}</td>
                   <td>{t.commodity}</td>
-                  <td className="text-right font-mono text-zinc-300">{t.receivedKg.toLocaleString('en-IN')} kg</td>
+                  <td className="text-right font-mono text-zinc-700">{t.receivedKg.toLocaleString('en-IN')} kg</td>
                   <td className="text-right font-mono text-emerald-400 font-bold">{t.acceptedKg.toLocaleString('en-IN')} kg</td>
                   <td className="text-right font-mono text-red-400">{t.rejectedKg.toLocaleString('en-IN')} kg</td>
                   <td>
@@ -245,10 +245,10 @@ export default function QualityPage() {
                       {t.grade === 'REJECTED' ? 'REJECTED' : `Grade ${t.grade}`}
                     </Badge>
                   </td>
-                  <td className="text-xs font-mono text-zinc-300">{t.moisture} | {t.ffa}</td>
+                  <td className="text-xs font-mono text-zinc-700">{t.moisture} | {t.ffa}</td>
                   <td>
                     {t.processingRequired ? (
-                      <span className="text-xs font-medium text-amber-400 flex items-center gap-1">
+                      <span className="text-xs font-medium text-zinc-900 flex items-center gap-1">
                         <Layers size={13} /> {t.processingSteps.join(' → ')}
                       </span>
                     ) : (
@@ -263,7 +263,7 @@ export default function QualityPage() {
                   <td className="text-right">
                     <button
                       onClick={() => setDetailModal(t)}
-                      className="btn-ghost text-xs py-1 px-2 text-zinc-300 hover:text-white"
+                      className="btn-ghost text-xs py-1 px-2 text-zinc-700 hover:text-zinc-950"
                     >
                       View Report
                     </button>
@@ -304,8 +304,8 @@ export default function QualityPage() {
           </div>
 
           {/* Partial Acceptance / Rejection */}
-          <div className="p-3 bg-surface-3 rounded-xl border border-white/5 space-y-3">
-            <p className="text-xs font-bold text-white uppercase tracking-wider">Partial Acceptance / Rejection (Section 8.8)</p>
+          <div className="p-3 bg-zinc-200 rounded-xl border border-white/5 space-y-3">
+            <p className="text-xs font-bold text-zinc-950 uppercase tracking-wider">Partial Acceptance / Rejection (Section 8.8)</p>
             <div className="grid grid-cols-3 gap-3">
               <FormField label="Received Weight (kg)">
                 <input
@@ -331,7 +331,7 @@ export default function QualityPage() {
               <FormField label="Auto Rejected (kg)">
                 <input
                   disabled
-                  className="tom-input font-mono text-red-400 bg-surface-2"
+                  className="tom-input font-mono text-red-400 bg-zinc-100"
                   value={Math.max(0, form.receivedKg - form.acceptedKg)}
                 />
               </FormField>
@@ -398,15 +398,15 @@ export default function QualityPage() {
           </div>
 
           {/* Processing Decision Chain (Section 8.10) */}
-          <div className="p-3 bg-surface-3 rounded-xl border border-white/5 space-y-2">
-            <p className="text-xs font-bold text-white uppercase tracking-wider">Processing Decision (Section 8.10)</p>
-            <div className="flex flex-wrap gap-4 text-xs text-zinc-300 pt-1">
+          <div className="p-3 bg-zinc-200 rounded-xl border border-white/5 space-y-2">
+            <p className="text-xs font-bold text-zinc-950 uppercase tracking-wider">Processing Decision (Section 8.10)</p>
+            <div className="flex flex-wrap gap-4 text-xs text-zinc-700 pt-1">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={form.needsDrying}
                   onChange={e => setForm({ ...form, needsDrying: e.target.checked })}
-                  className="rounded accent-amber-500"
+                  className="rounded accent-zinc-950"
                 />
                 Drying required (High moisture)
               </label>
@@ -415,7 +415,7 @@ export default function QualityPage() {
                   type="checkbox"
                   checked={form.needsCleaning}
                   onChange={e => setForm({ ...form, needsCleaning: e.target.checked })}
-                  className="rounded accent-amber-500"
+                  className="rounded accent-zinc-950"
                 />
                 Cleaning / De-stoning required
               </label>
@@ -424,7 +424,7 @@ export default function QualityPage() {
                   type="checkbox"
                   checked={form.needsPolishing}
                   onChange={e => setForm({ ...form, needsPolishing: e.target.checked })}
-                  className="rounded accent-amber-500"
+                  className="rounded accent-zinc-950"
                 />
                 Polishing required (Turmeric)
               </label>
@@ -441,18 +441,18 @@ export default function QualityPage() {
       {/* Detail Modal */}
       <Modal open={!!detailModal} onClose={() => setDetailModal(null)} title={`Inspection Certificate — ${detailModal?.id}`}>
         <div className="space-y-4">
-          <div className="p-4 bg-surface-3 rounded-xl space-y-2.5 text-xs">
+          <div className="p-4 bg-zinc-200 rounded-xl space-y-2.5 text-xs">
             <div className="flex justify-between">
               <span className="text-zinc-400">Lot Code:</span>
-              <span className="font-mono text-white font-bold">{detailModal?.batchCode}</span>
+              <span className="font-mono text-zinc-900 font-bold">{detailModal?.batchCode}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Commodity:</span>
-              <span className="text-amber-300 font-semibold">{detailModal?.commodity}</span>
+              <span className="text-zinc-950 font-bold">{detailModal?.commodity}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Received Weight:</span>
-              <span className="font-mono text-white">{detailModal?.receivedKg?.toLocaleString('en-IN')} kg</span>
+              <span className="font-mono text-zinc-900">{detailModal?.receivedKg?.toLocaleString('en-IN')} kg</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Accepted into Stock:</span>
@@ -464,11 +464,11 @@ export default function QualityPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Visual Quality Factors:</span>
-              <span className="text-zinc-200">{detailModal?.colour} | {detailModal?.appearance}</span>
+              <span className="text-zinc-800">{detailModal?.colour} | {detailModal?.appearance}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Inspector:</span>
-              <span className="text-zinc-300">{detailModal?.testedBy} ({detailModal?.date})</span>
+              <span className="text-zinc-700">{detailModal?.testedBy} ({detailModal?.date})</span>
             </div>
           </div>
           <div className="flex justify-end pt-2">

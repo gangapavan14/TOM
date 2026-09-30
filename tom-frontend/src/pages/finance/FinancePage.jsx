@@ -131,7 +131,7 @@ export default function FinancePage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">Finance & Financial Authority</h1>
+          <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-display">Finance & Financial Authority</h1>
           <p className="page-sub text-zinc-400 text-sm mt-1">
             Section 13 & 14: Admin Financial Authority, Supplier Early Payment Deductions, Multi-Account Tracking & Ledger Audits
           </p>
@@ -149,22 +149,22 @@ export default function FinancePage() {
           <div key={a.id} className="tom-card p-5">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">{a.type}</span>
-                <p className="font-semibold text-white text-sm mt-0.5">{a.name}</p>
+                <span className="text-[10px] font-bold text-zinc-900 uppercase tracking-wider">{a.type}</span>
+                <p className="font-semibold text-zinc-900 text-sm mt-0.5">{a.name}</p>
               </div>
               <span className="text-2xl">{a.type === 'CASH' ? '💵' : a.type === 'UPI' ? '📱' : '🏦'}</span>
             </div>
-            <p className="font-display text-2xl font-extrabold text-white">{a.balance}</p>
+            <p className="font-display text-2xl font-extrabold text-zinc-950">{a.balance}</p>
             <p className="text-[11px] text-zinc-500 mt-1">Last activity: {a.lastTx}</p>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-2 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-zinc-100 p-1 rounded-xl w-fit">
         {['payables', 'expenses', 'ledgers'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-surface-3 text-white' : 'text-zinc-500 hover:text-white'}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-950'}`}>
             {t === 'payables' ? '1. Supplier Settlements (Section 13.6)' : t === 'expenses' ? '2. Classified Expenses' : '3. Core Operating Ledgers (Section 14)'}
           </button>
         ))}
@@ -192,16 +192,16 @@ export default function FinancePage() {
               </thead>
               <tbody>
                 {payables.map(p => (
-                  <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-semibold text-white">
+                  <tr key={p.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-semibold text-zinc-900">
                       <div>{p.supplier}</div>
                       <span className="text-[11px] text-zinc-500 font-mono">{p.bankDetails}</span>
                     </td>
-                    <td className="text-right font-mono font-bold text-amber-300">
+                    <td className="text-right font-mono font-bold text-zinc-800">
                       ₹{p.grossAmount.toLocaleString('en-IN')}
                     </td>
                     <td>
-                      <span className={`text-xs font-semibold ${p.dueDays <= 2 ? 'text-red-400' : 'text-zinc-300'}`}>
+                      <span className={`text-xs font-semibold ${p.dueDays <= 2 ? 'text-red-400' : 'text-zinc-700'}`}>
                         Due in {p.dueDays} days ({p.dueDate})
                       </span>
                     </td>
@@ -257,10 +257,10 @@ export default function FinancePage() {
               </thead>
               <tbody>
                 {expenses.map(e => (
-                  <tr key={e.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-semibold text-white">{e.desc}</td>
+                  <tr key={e.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-semibold text-zinc-900">{e.desc}</td>
                     <td><Badge variant="info">{e.category}</Badge></td>
-                    <td className="text-xs text-amber-300 font-medium">{e.classification}</td>
+                    <td className="text-xs text-zinc-800 font-medium">{e.classification}</td>
                     <td className="text-xs font-mono text-zinc-400">{e.method}</td>
                     <td className="text-right font-mono font-bold text-red-400">-₹{e.amount.toLocaleString('en-IN')}</td>
                     <td className="text-zinc-500 text-xs">{e.recorded}</td>
@@ -289,12 +289,12 @@ export default function FinancePage() {
                   <span className="font-mono text-xs text-zinc-500">{led.code}</span>
                   <span className="text-xs text-emerald-400 font-semibold">Active Ledger</span>
                 </div>
-                <h3 className="font-display font-bold text-white text-base">{led.name}</h3>
+                <h3 className="font-display font-bold text-zinc-950 text-base">{led.name}</h3>
                 <p className="text-zinc-400 text-xs mt-1">{led.desc}</p>
               </div>
               <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
                 <span className="text-xs text-zinc-500">Balance:</span>
-                <span className="font-mono font-bold text-amber-300 text-base">{led.balance}</span>
+                <span className="font-mono font-bold text-zinc-800 text-base">{led.balance}</span>
               </div>
             </Card>
           ))}
@@ -304,29 +304,29 @@ export default function FinancePage() {
       {/* Authorize Supplier Payment Modal */}
       <Modal open={showPayModal} onClose={() => setShowPayModal(false)} title={`Authorize Payment — ${selectedPayable?.supplier}`}>
         <form onSubmit={handleConfirmPayment} className="space-y-4">
-          <div className="p-4 bg-surface-3 rounded-xl space-y-2 text-xs">
+          <div className="p-4 bg-zinc-200 rounded-xl space-y-2 text-xs">
             <div className="flex justify-between">
               <span className="text-zinc-400">Recipient:</span>
-              <span className="font-bold text-white">{selectedPayable?.supplier}</span>
+              <span className="font-bold text-zinc-950">{selectedPayable?.supplier}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Gross Procurement Payable:</span>
-              <span className="font-mono text-white font-bold">₹{selectedPayable?.grossAmount?.toLocaleString('en-IN')}</span>
+              <span className="font-mono text-zinc-900 font-bold">₹{selectedPayable?.grossAmount?.toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Standard Due Date:</span>
-              <span className="font-mono text-zinc-300">{selectedPayable?.dueDate}</span>
+              <span className="font-mono text-zinc-700">{selectedPayable?.dueDate}</span>
             </div>
           </div>
 
           {selectedPayable?.earlyPaymentEligible && (
-            <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2">
-              <label className="flex items-center gap-3 cursor-pointer text-xs font-semibold text-amber-300">
+            <div className="p-3 bg-zinc-100 border border-zinc-200 rounded-xl space-y-2">
+              <label className="flex items-center gap-3 cursor-pointer text-xs font-semibold text-zinc-800">
                 <input
                   type="checkbox"
                   checked={takeEarlyDiscount}
                   onChange={e => setTakeEarlyDiscount(e.target.checked)}
-                  className="rounded accent-amber-500 w-4 h-4"
+                  className="rounded accent-zinc-950 w-4 h-4"
                 />
                 Apply Immediate Early Payout Deduction (2% = ₹{(selectedPayable?.grossAmount * 0.02)?.toLocaleString('en-IN')})
               </label>
@@ -349,8 +349,8 @@ export default function FinancePage() {
             </select>
           </FormField>
 
-          <div className="p-3 bg-surface-2 rounded-xl flex items-center justify-between text-xs font-bold">
-            <span className="text-zinc-300">Final Payout Amount:</span>
+          <div className="p-3 bg-zinc-100 rounded-xl flex items-center justify-between text-xs font-bold">
+            <span className="text-zinc-700">Final Payout Amount:</span>
             <span className="font-mono text-emerald-400 text-base">
               ₹ {takeEarlyDiscount
                 ? (selectedPayable?.grossAmount * 0.98).toLocaleString('en-IN')

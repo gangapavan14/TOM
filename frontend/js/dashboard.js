@@ -5,7 +5,7 @@
 
 // Auth guard
 Auth.requireAuth();
-if (!Auth.hasRole('ADMIN')) {
+if (window.location.protocol !== 'file:' && !Auth.hasRole('ADMIN')) {
   const session = Auth.getSession();
   const target = Auth.getDashboardUrl(session?.role);
   if (target && !window.location.pathname.endsWith(target)) {
@@ -107,8 +107,9 @@ window.handleApproval = function(btn, type, id) {
   const item = btn.closest('.approval-item') || btn.closest('.activity-item') || btn.parentElement;
   btn.disabled = true;
   btn.textContent = 'Approved ✓';
-  btn.style.backgroundColor = '#10b981';
-  btn.style.borderColor = '#10b981';
+  btn.style.backgroundColor = '#09090b';
+  btn.style.borderColor = '#09090b';
+  btn.style.color = '#ffffff';
   setTimeout(() => {
     if (item) {
       item.style.transition = 'opacity 0.3s ease, height 0.3s ease';

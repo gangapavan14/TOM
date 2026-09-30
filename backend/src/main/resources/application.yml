@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/tom_db?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
-    username: tom_user
-    password: tom_pass
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/tom_db?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true}
+    username: ${SPRING_DATASOURCE_USERNAME:tom_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:tom_pass}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -22,7 +22,7 @@ spring:
     validate-on-migrate: true
 
 server:
-  port: 8080
+  port: ${PORT:8080}
   servlet:
     context-path: /
 

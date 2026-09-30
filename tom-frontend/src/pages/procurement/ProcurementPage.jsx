@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardHeader, Badge, EmptyState, StatusBadge, Modal, FormField } from '../../components/ui'
+import { useAuth } from '../../context/AuthContext'
+import { useOperationalData } from '../../context/OperationalDataContext'
 import { procurementApi } from '../../api/endpoints'
 import { Plus, Search, Clock, AlertTriangle, CheckCircle, ArrowRight, UserCheck, ShieldAlert, Sparkles, Send } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -74,11 +76,12 @@ const initialDeals = [
 ]
 
 export default function ProcurementPage() {
+  const { user } = useAuth()
+  const { deals, escalateProcurementDeal, approveEscalatedDeal } = useOperationalData()
   const [tab, setTab] = useState('requirements')
   const [search, setSearch] = useState('')
   const [requirements, setRequirements] = useState(initialRequirements)
   const [reservations, setReservations] = useState(initialReservations)
-  const [deals, setDeals] = useState(initialDeals)
 
   // Modals
   const [showReqModal, setShowReqModal] = useState(false)
@@ -217,13 +220,10 @@ export default function ProcurementPage() {
   const handleEscalateToAdmin = (e) => {
     e.preventDefault()
     if (!selectedDealForEscalation) return
-    setDeals(deals.map(d => d.id === selectedDealForEscalation.id ? {
-      ...d,
-      status: 'ESCALATED_TO_ADMIN',
-      escalated: true,
-      escalationReason: escalationNote || 'Field Officer requested special rate approval'
-    } : d))
-    toast.success(`Deal #${selectedDealForEscalation.dealCode} escalated to Admin with communication thread`)
+    escalateProcurementDeal(
+      selectedDealForEscalation.dealCode || selectedDealForEscalation.id,
+      escalationNote || 'Field Officer requested special rate approval exceeding ±₹3 cap'
+    )
     setShowEscalationModal(false)
     setSelectedDealForEscalation(null)
   }
@@ -237,7 +237,7 @@ export default function ProcurementPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">Procurement Pipeline</h1>
+          <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-display">Procurement Pipeline</h1>
           <p className="page-sub text-zinc-400 text-sm mt-1">
             Supplier acquisition (Farmers, Field Agents, Commission Agents), 12-hr reservations, and 24-hr delivery commitments
           </p>
@@ -255,16 +255,16 @@ export default function ProcurementPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Open Requirements', value: requirements.length, sub: `${(totalReqKg / 1000).toFixed(1)} t requested`, icon: '📋', color: 'text-blue-400 bg-blue-500/10' },
-          { label: '12-hr Reservations Active', value: reservations.length, sub: `${(totalReservedKg / 1000).toFixed(1)} t held temporarily`, icon: '⏰', color: 'text-amber-400 bg-amber-500/10' },
-          { label: 'Finalized Deals', value: deals.length, sub: '24-hr delivery clock active', icon: '🤝', color: 'text-emerald-400 bg-emerald-500/10' },
-          { label: 'Admin Escalations', value: deals.filter(d => d.escalated).length, sub: 'Requires pricing exception', icon: '⚠️', color: 'text-red-400 bg-red-500/10' },
+          { label: 'Open Requirements', value: requirements.length, sub: `${(totalReqKg / 1000).toFixed(1)} t requested`, icon: '📋', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: '12-hr Reservations Active', value: reservations.length, sub: `${(totalReservedKg / 1000).toFixed(1)} t held temporarily`, icon: '⏰', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Finalized Deals', value: deals.length, sub: '24-hr delivery clock active', icon: '🤝', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
+          { label: 'Admin Escalations', value: deals.filter(d => d.escalated).length, sub: 'Requires pricing exception', icon: '⚠️', color: 'text-zinc-900 bg-zinc-100 border border-zinc-200' },
         ].map(s => (
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl ${s.color} flex items-center justify-center text-xl flex-shrink-0`}>{s.icon}</div>
             <div>
-              <p className="text-2xl font-extrabold font-display text-white">{s.value}</p>
-              <p className="text-xs font-semibold text-zinc-300">{s.label}</p>
+              <p className="text-2xl font-extrabold font-display text-zinc-950">{s.value}</p>
+              <p className="text-xs font-bold text-zinc-900 uppercase tracking-wider">{s.label}</p>
               <p className="text-[11px] text-zinc-500 mt-0.5">{s.sub}</p>
             </div>
           </div>
@@ -272,10 +272,10 @@ export default function ProcurementPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-2 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-zinc-100 p-1 rounded-xl w-fit">
         {tabs.map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-surface-3 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-950'}`}>
             {t === 'requirements' ? '1. Admin Requirements' : t === 'reservations' ? '2. 12-hr Reservations' : '3. Finalized Deals (24h Delivery)'}
           </button>
         ))}
@@ -306,13 +306,13 @@ export default function ProcurementPage() {
               </thead>
               <tbody>
                 {requirements.filter(r => r.commodity.toLowerCase().includes(search.toLowerCase())).map(r => (
-                  <tr key={r.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-mono text-xs text-amber-400 font-semibold">{r.reqCode}</td>
-                    <td className="font-semibold text-white">{r.commodity}</td>
-                    <td className="text-right font-mono text-zinc-200">{r.required.toLocaleString('en-IN')} kg</td>
-                    <td className="text-right font-mono text-amber-400 font-bold">{r.reserved.toLocaleString('en-IN')} kg</td>
+                  <tr key={r.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-mono text-xs text-zinc-950 font-bold">{r.reqCode}</td>
+                    <td className="font-semibold text-zinc-900">{r.commodity}</td>
+                    <td className="text-right font-mono text-zinc-900">{r.required.toLocaleString('en-IN')} kg</td>
+                    <td className="text-right font-mono text-zinc-950 font-bold">{r.reserved.toLocaleString('en-IN')} kg</td>
                     <td className="text-right font-mono text-emerald-400 font-semibold">{r.available.toLocaleString('en-IN')} kg</td>
-                    <td className="text-right font-mono font-bold text-zinc-200">₹{r.targetPrice}/kg</td>
+                    <td className="text-right font-mono font-bold text-zinc-800">₹{r.targetPrice}/kg</td>
                     <td>
                       <Badge variant={r.status === 'OPEN' ? 'info' : r.status === 'FULLY_RESERVED' ? 'warning' : 'success'}>
                         {r.status.replace('_', ' ')}
@@ -350,21 +350,21 @@ export default function ProcurementPage() {
               </thead>
               <tbody>
                 {reservations.map(r => (
-                  <tr key={r.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-mono text-xs text-amber-400 font-semibold">{r.resCode}</td>
+                  <tr key={r.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-mono text-xs text-zinc-950 font-bold">{r.resCode}</td>
                     <td>
-                      <p className="font-semibold text-white">{r.supplier}</p>
+                      <p className="font-semibold text-zinc-900">{r.supplier}</p>
                       <span className="text-[11px] text-zinc-400 font-mono">
                         {r.sourceType === 'COMMISSION_AGENT' ? `Broker: ${r.agentName}` : 'Direct Farmer'}
                       </span>
                     </td>
                     <td>
-                      <span className="text-xs font-mono text-zinc-300 px-2 py-0.5 rounded bg-surface-3">
+                      <span className="text-xs font-mono text-zinc-700 px-2 py-0.5 rounded bg-zinc-200">
                         {r.commissionRule}
                       </span>
                     </td>
-                    <td className="text-zinc-300">{r.commodity}</td>
-                    <td className="text-right font-mono text-amber-400 font-bold">{r.qty.toLocaleString('en-IN')} kg</td>
+                    <td className="text-zinc-700">{r.commodity}</td>
+                    <td className="text-right font-mono text-zinc-950 font-bold">{r.qty.toLocaleString('en-IN')} kg</td>
                     <td>
                       <div className="flex items-center gap-1.5 text-xs text-red-400 font-mono">
                         <Clock size={13} />
@@ -424,19 +424,19 @@ export default function ProcurementPage() {
               </thead>
               <tbody>
                 {deals.map(d => (
-                  <tr key={d.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-mono text-xs text-amber-400 font-semibold">{d.dealCode}</td>
+                  <tr key={d.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-mono text-xs text-zinc-950 font-bold">{d.dealCode}</td>
                     <td>
-                      <p className="font-semibold text-white">{d.supplier}</p>
+                      <p className="font-semibold text-zinc-900">{d.supplier}</p>
                       <span className="text-[11px] text-zinc-500">{d.sourceType}</span>
                     </td>
-                    <td className="text-zinc-300">{d.commodity}</td>
-                    <td className="text-right font-mono text-zinc-200">{d.qty.toLocaleString('en-IN')} kg</td>
-                    <td className="text-right font-mono font-bold text-amber-300">₹{d.agreedPrice.toFixed(2)}/kg</td>
+                    <td className="text-zinc-700">{d.commodity}</td>
+                    <td className="text-right font-mono text-zinc-900">{d.qty.toLocaleString('en-IN')} kg</td>
+                    <td className="text-right font-mono font-bold text-zinc-800">₹{d.agreedPrice.toFixed(2)}/kg</td>
                     <td className="text-right font-mono text-emerald-400">₹{d.advance.toLocaleString('en-IN')}</td>
                     <td>
-                      <span className="text-xs font-mono text-zinc-300 flex items-center gap-1">
-                        <Clock size={12} className="text-amber-400" /> {d.deliveryWindowRemaining}
+                      <span className="text-xs font-mono text-zinc-700 flex items-center gap-1">
+                        <Clock size={12} className="text-zinc-900" /> {d.deliveryWindowRemaining}
                       </span>
                     </td>
                     <td>
@@ -448,12 +448,23 @@ export default function ProcurementPage() {
                       {!d.escalated ? (
                         <button
                           onClick={() => { setSelectedDealForEscalation(d); setShowEscalationModal(true) }}
-                          className="btn-ghost text-xs py-1 px-2 text-zinc-400 hover:text-amber-400"
+                          className="btn-ghost text-xs py-1 px-2 text-zinc-700 hover:text-zinc-950"
                         >
                           Escalate Rate
                         </button>
                       ) : (
-                        <span className="text-[11px] text-red-400 font-semibold">Admin Escalated</span>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <span className="text-[11px] text-zinc-900 font-semibold">Admin Escalated</span>
+                          {user?.role === 'ADMIN' && (
+                            <button
+                              onClick={() => approveEscalatedDeal(d.dealCode || d.id)}
+                              className="btn-primary text-xs px-2 py-0.5"
+                              title="Admin Price Exception Approval"
+                            >
+                              Approve Rate
+                            </button>
+                          )}
+                        </div>
                       )}
                     </td>
                   </tr>
@@ -568,7 +579,7 @@ export default function ProcurementPage() {
           </div>
 
           {newRes.sourceType === 'COMMISSION_AGENT' && (
-            <div className="p-3 bg-surface-3 rounded-xl border border-white/5 space-y-3">
+            <div className="p-3 bg-zinc-200 rounded-xl border border-white/5 space-y-3">
               <FormField label="Commission Agent / Broker Name">
                 <input
                   required
@@ -602,7 +613,7 @@ export default function ProcurementPage() {
             />
           </FormField>
 
-          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300">
+          <div className="p-3 bg-zinc-100 border border-zinc-200 rounded-xl text-xs text-zinc-800">
             ⏰ <strong>12-Hour Reservation Rule:</strong> This quantity will be held from available requirement. If negotiation fails or stock is not dispatched within 12 hours, the system will release it automatically.
           </div>
 
@@ -620,11 +631,11 @@ export default function ProcurementPage() {
         title={`Escalate Rate to Admin — ${selectedDealForEscalation?.dealCode}`}
       >
         <form onSubmit={handleEscalateToAdmin} className="space-y-4">
-          <div className="p-3 bg-surface-3 rounded-xl text-xs space-y-1">
+          <div className="p-3 bg-zinc-200 rounded-xl text-xs space-y-1">
             <div><strong>Supplier:</strong> {selectedDealForEscalation?.supplier}</div>
             <div><strong>Commodity:</strong> {selectedDealForEscalation?.commodity} ({selectedDealForEscalation?.qty} kg)</div>
             <div><strong>Target Limit:</strong> ₹{selectedDealForEscalation?.targetPrice}/kg</div>
-            <div className="text-amber-400 font-semibold">Demanded Price: ₹{selectedDealForEscalation?.agreedPrice}/kg</div>
+            <div className="text-zinc-950 font-bold">Demanded Price: ₹{selectedDealForEscalation?.agreedPrice}/kg</div>
           </div>
 
           <FormField label="Reason for Price Escalation (Section 17 Internal Communication)">

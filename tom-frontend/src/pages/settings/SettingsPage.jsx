@@ -46,7 +46,7 @@ export default function SettingsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">Enterprise Policies & System Configuration</h1>
+          <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-display">Enterprise Policies & System Configuration</h1>
           <p className="page-sub text-zinc-400 text-sm mt-1">
             Section 2.5 & 32: Manage dynamic business rules (Negotiation limits, 12h hold rules, 24h delivery, salaries, and statutory taxes)
           </p>
@@ -54,10 +54,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-2 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-zinc-100 p-1 rounded-xl w-fit">
         {['policies', 'salaries', 'identity', 'hardware'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-surface-3 text-white' : 'text-zinc-500 hover:text-white'}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-950'}`}>
             {t === 'policies' ? '1. Business Policy Engine (Section 2.5)' : t === 'salaries' ? '2. Salary Structures (Section 7.1)' : t === 'identity' ? '3. Mill Identity & Taxes' : '4. Hardware Sensors'}
           </button>
         ))}
@@ -69,8 +69,8 @@ export default function SettingsPage() {
         {tab === 'policies' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="p-6 space-y-4">
-              <h3 className="font-display font-bold text-white text-base flex items-center gap-2">
-                <Clock size={16} className="text-amber-400" />
+              <h3 className="font-display font-bold text-zinc-950 text-base flex items-center gap-2">
+                <Clock size={16} className="text-zinc-900" />
                 Procurement & Reservation Timeouts (Section 8.3 & 8.4)
               </h3>
               <div className="space-y-3">
@@ -106,7 +106,7 @@ export default function SettingsPage() {
             </Card>
 
             <Card className="p-6 space-y-4">
-              <h3 className="font-display font-bold text-white text-base flex items-center gap-2">
+              <h3 className="font-display font-bold text-zinc-950 text-base flex items-center gap-2">
                 <DollarSign size={16} className="text-emerald-400" />
                 Finance & Credit Policies (Section 11 & 13)
               </h3>
@@ -165,8 +165,8 @@ export default function SettingsPage() {
         {/* Salary Structures (Section 7.1) */}
         {tab === 'salaries' && (
           <Card className="p-6 space-y-4 max-w-2xl">
-            <h3 className="font-display font-bold text-white text-base flex items-center gap-2">
-              <Users size={16} className="text-amber-400" />
+            <h3 className="font-display font-bold text-zinc-950 text-base flex items-center gap-2">
+              <Users size={16} className="text-zinc-900" />
               Default Permanent Employment Salary Scales (Section 7.1)
             </h3>
             <p className="text-xs text-zinc-400">Monthly base compensation rates configurable by Admin:</p>
@@ -220,7 +220,7 @@ export default function SettingsPage() {
         {/* Identity */}
         {tab === 'identity' && (
           <Card className="p-6 space-y-4 max-w-xl">
-            <h3 className="font-display font-bold text-white text-base flex items-center gap-2">
+            <h3 className="font-display font-bold text-zinc-950 text-base flex items-center gap-2">
               <Database size={16} className="text-brand-400" />
               Mill Identity & Statutory Registrations
             </h3>
@@ -253,7 +253,7 @@ export default function SettingsPage() {
         {/* Hardware Sensors */}
         {tab === 'hardware' && (
           <Card className="p-6 space-y-4 max-w-xl">
-            <h3 className="font-display font-bold text-white text-base flex items-center gap-2">
+            <h3 className="font-display font-bold text-zinc-950 text-base flex items-center gap-2">
               <Cpu size={16} className="text-brand-400" />
               Weighbridge & Industrial Sensor Gateways
             </h3>
@@ -266,12 +266,12 @@ export default function SettingsPage() {
                 />
               </FormField>
               <div className="pt-2">
-                <label className="flex items-center gap-3 cursor-pointer text-sm text-zinc-300">
+                <label className="flex items-center gap-3 cursor-pointer text-sm text-zinc-700">
                   <input
                     type="checkbox"
                     checked={autoSms}
                     onChange={e => setAutoSms(e.target.checked)}
-                    className="w-4 h-4 accent-amber-500 rounded"
+                    className="w-4 h-4 accent-zinc-950 rounded"
                   />
                   Auto-dispatch WhatsApp / SMS weighment receipt upon gross/tare capture
                 </label>

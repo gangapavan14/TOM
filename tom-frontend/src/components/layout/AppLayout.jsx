@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useOperationalData } from '../../context/OperationalDataContext'
 import { Avatar } from '../ui'
 import {
   LayoutDashboard, Package, CheckSquare, Settings2, Truck, ShoppingCart, ShoppingBag,
   CreditCard, Users, FileText, BarChart3, ClipboardList, LogOut,
-  Bell, Menu, X, ChevronRight, Shield, ShieldCheck, UserCheck, AlertCircle
+  Bell, Menu, X, ChevronRight, Shield, ShieldCheck, UserCheck, AlertCircle, HardHat
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -19,11 +20,12 @@ const navSections = [
   {
     label: 'Operations',
     items: [
-      { to: '/procurement',  icon: Package,       label: 'Procurement', allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER'] },
-      { to: '/quality',      icon: CheckSquare,   label: 'Quality',     allowedRoles: ['ADMIN', 'FIELD_OFFICER', 'SENIOR_WORKER'] },
-      { to: '/processing',   icon: Settings2,     label: 'Processing',  allowedRoles: ['ADMIN', 'SENIOR_WORKER', 'WORKER'] },
-      { to: '/inventory',    icon: ClipboardList, label: 'Inventory',   allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SENIOR_WORKER', 'SALES'] },
-      { to: '/logistics',    icon: Truck,         label: 'Logistics',   allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SENIOR_WORKER'] },
+      { to: '/floor-operations', icon: HardHat,       label: 'Floor Tasks (Senior Worker)', allowedRoles: ['ADMIN', 'SENIOR_WORKER', 'WORKER', 'OFFICE_EMPLOYEE'] },
+      { to: '/procurement',      icon: Package,       label: 'Procurement', allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER'] },
+      { to: '/quality',          icon: CheckSquare,   label: 'Quality',     allowedRoles: ['ADMIN', 'FIELD_OFFICER', 'SENIOR_WORKER'] },
+      { to: '/processing',       icon: Settings2,     label: 'Processing',  allowedRoles: ['ADMIN', 'SENIOR_WORKER', 'WORKER'] },
+      { to: '/inventory',        icon: ClipboardList, label: 'Inventory',   allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SENIOR_WORKER', 'SALES'] },
+      { to: '/logistics',        icon: Truck,         label: 'Logistics',   allowedRoles: ['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SENIOR_WORKER'] },
     ],
   },
   {
@@ -53,24 +55,97 @@ const navSections = [
 ]
 
 const AVAILABLE_ROLES = [
-  { role: 'ADMIN', label: '👑 Admin (Owner)', desc: 'Unrestricted full access across all 14 modules' },
-  { role: 'SALES', label: '💼 Sales Executive', desc: 'Can only view/create sales orders & stock' },
-  { role: 'FIELD_OFFICER', label: '🌾 Field Officer', desc: 'Can only view/manage procurement & quality' },
-  { role: 'SENIOR_WORKER', label: '⚙️ Plant Supervisor', desc: 'Can only control expellers, runs & inventory' },
-  { role: 'OFFICE_EMPLOYEE', label: '🏢 Office Accountant', desc: 'Manages operations, sales & finance' },
+  { role: 'ADMIN', label: 'Admin (Executive)', desc: 'Unrestricted full access across all 15 modules' },
+  { role: 'SALES', label: 'Sales Executive', desc: 'Can only view/create sales orders & stock' },
+  { role: 'FIELD_OFFICER', label: 'Field Officer', desc: 'Can only view/manage procurement & quality' },
+  { role: 'SENIOR_WORKER', label: 'Senior Worker (Supervisor)', desc: 'Controls expellers, worker task checklists & physical loading count' },
+  { role: 'OFFICE_EMPLOYEE', label: 'Office Accountant', desc: 'Manages operations, sales & finance' },
 ]
 
 export default function AppLayout({ children }) {
   const { user, logout, switchRole } = useAuth()
+  const { loadingDocket, cashHandovers, deals, tempApps } = useOperationalData()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [roleModalOpen, setRoleModalOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Procurement Reservation Expiring', desc: '1,000 kg Maize reservation for Sri Rama Agros expires in 42 minutes (12-hr rule).', time: '10m ago', unread: true, type: 'warning' },
-    { id: 2, title: 'Pending Customer Pickup Verification', desc: 'Heritage Foods truck AP 21 TY 4521 loading complete. Field Officer signoff required.', time: '25m ago', unread: true, type: 'info' },
-    { id: 3, title: 'Sales Cash Handover Waiting', desc: 'Suresh Kumar collected ₹45,000 cash from Tirupati Refineries. Admin count verification needed.', time: '1h ago', unread: true, type: 'warning' },
-    { id: 4, title: 'Supplier Payment Due (Prompt Discount)', desc: 'Sri Rama Agros ₹1,80,000 eligible for 2% prompt payment discount if settled today.', time: '2h ago', unread: false, type: 'brand' },
-  ])
+  const [dismissedIds, setDismissedIds] = useState([])
+
+  const notifications = useMemo(() => {
+    const list = []
+    
+    // 1. Rule 6 Loading Signoff
+    if (loadingDocket?.status === 'READY_FOR_FO_SIGNOFF') {
+      list.push({
+        id: 'notif-load-fo',
+        title: 'Rule 6: FO Loading Signoff Pending',
+        desc: `${loadingDocket.client} (${loadingDocket.vehicle}) loading recorded (${loadingDocket.currentCount} bags). Field Officer signoff required to deduct inventory.`,
+        time: 'Active now',
+        unread: !dismissedIds.includes('notif-load-fo'),
+        type: 'warning',
+        link: '/floor-operations'
+      })
+    }
+
+    // 2. Rule 7 Sales Cash Handover
+    const unverifiedHandovers = Array.isArray(cashHandovers) ? cashHandovers.filter(c => !c.verified) : [];
+    unverifiedHandovers.forEach(ch => {
+      const id = `notif-ch-${ch.id}`;
+      list.push({
+        id,
+        title: 'Rule 7: Cash Handover Needs Admin Verification',
+        desc: `${ch.salesPerson} submitted ₹${(ch.amount || 0).toLocaleString('en-IN')} cash from ${ch.customer}. Customer ledger will not adjust until Admin physically verifies.`,
+        time: ch.collectedAt || 'Pending',
+        unread: !dismissedIds.includes(id),
+        type: 'warning',
+        link: '/sales'
+      });
+    });
+
+    // 3. Procurement Rate Escalation
+    const escalatedDeals = Array.isArray(deals) ? deals.filter(d => d.escalated) : [];
+    escalatedDeals.forEach(deal => {
+      const id = `notif-deal-${deal.id || deal.dealCode}`;
+      list.push({
+        id,
+        title: 'Procurement Rate Escalated',
+        desc: `Deal #${deal.dealCode || deal.id} (${deal.commodity}) exceeds Field Officer ceiling cap. Admin price exception required.`,
+        time: 'Pending approval',
+        unread: !dismissedIds.includes(id),
+        type: 'danger',
+        link: '/procurement'
+      });
+    });
+
+    // 4. Temp Worker Application
+    const pendingTempApps = Array.isArray(tempApps) ? tempApps.filter(t => t.status === 'PENDING') : [];
+    pendingTempApps.forEach(app => {
+      const id = `notif-tmp-${app.id}`;
+      list.push({
+        id,
+        title: 'Daily Wage Worker Application',
+        desc: `${app.name} (${app.role || 'Worker'}) applied for daily wage RFID badge. Admin signoff needed.`,
+        time: app.appliedAt || 'Pending',
+        unread: !dismissedIds.includes(id),
+        type: 'info',
+        link: '/workforce'
+      });
+    });
+
+    // Default system guidance if no pending approvals
+    if (list.length === 0) {
+      list.push({
+        id: 'notif-default-1',
+        title: 'All Systems Operational',
+        desc: 'All role approvals up to date. Invariant Rules 1-8 active and replicated.',
+        time: 'Just now',
+        unread: false,
+        type: 'success',
+        link: '/admin/dashboard'
+      })
+    }
+
+    return list
+  }, [loadingDocket, cashHandovers, deals, tempApps, dismissedIds])
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -148,7 +223,7 @@ export default function AppLayout({ children }) {
         <nav className="flex-1 overflow-y-auto px-3 py-3">
           {filteredNavSections.map(section => (
             <div key={section.label} className="mb-3">
-              <p className="px-2 py-1 text-[11px] font-semibold text-zinc-400">
+              <p className="px-2 py-1.5 text-xs font-bold text-zinc-950 uppercase tracking-wider">
                 {section.label}
               </p>
               <div className="space-y-0.5">
@@ -190,8 +265,8 @@ export default function AppLayout({ children }) {
           </div>
           <button onClick={handleLogout}
             className="w-full mt-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                       text-zinc-600 border border-zinc-200 bg-white hover:bg-red-50 hover:text-red-600
-                       hover:border-red-200 transition-all shadow-sm">
+                       text-zinc-600 border border-zinc-200 bg-white hover:bg-zinc-950 hover:text-white
+                       hover:border-zinc-950 active:scale-[0.98] transition-all shadow-sm cursor-pointer">
             <LogOut size={13} />
             Sign Out
           </button>
@@ -221,7 +296,7 @@ export default function AppLayout({ children }) {
             {/* Quick role test dropdown */}
             <button
               onClick={() => setRoleModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 shadow-sm transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 shadow-sm active:scale-[0.98] transition-all cursor-pointer"
             >
               <UserCheck size={14} className="text-zinc-500" />
               <span>Test Role</span>
@@ -231,12 +306,12 @@ export default function AppLayout({ children }) {
             <div className="relative">
               <button
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className="relative w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50 shadow-sm transition-colors"
+                className="relative w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50 shadow-sm active:scale-[0.98] transition-all cursor-pointer"
                 title="Operational Notifications (Section 16)"
               >
                 <Bell size={15} />
                 {notifications.filter(n => n.unread).length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center shadow">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-zinc-950 rounded-full text-[10px] font-bold text-white flex items-center justify-center shadow-xs">
                     {notifications.filter(n => n.unread).length}
                   </span>
                 )}
@@ -251,7 +326,7 @@ export default function AppLayout({ children }) {
                     </div>
                     <button
                       onClick={() => {
-                        setNotifications(notifications.map(n => ({ ...n, unread: false })))
+                        setDismissedIds(notifications.map(n => n.id))
                         toast.success('All alerts marked as read')
                       }}
                       className="text-[11px] text-zinc-500 hover:text-zinc-900 transition-colors"
@@ -266,8 +341,9 @@ export default function AppLayout({ children }) {
                         key={n.id}
                         className={`p-3.5 hover:bg-zinc-50 transition-colors cursor-pointer ${n.unread ? 'bg-zinc-50/60' : ''}`}
                         onClick={() => {
-                          setNotifications(notifications.map(item => item.id === n.id ? { ...item, unread: false } : item))
+                          setDismissedIds(prev => [...prev, n.id])
                           setNotificationsOpen(false)
+                          if (n.link) navigate(n.link)
                         }}
                       >
                         <div className="flex items-start justify-between gap-2">

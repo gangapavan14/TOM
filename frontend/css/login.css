@@ -84,14 +84,15 @@
 }
 
 .feature-icon {
-  width: 36px; height: 36px;
-  background: var(--surface-3);
+  width: 34px; height: 34px;
+  background: #f4f4f5;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
+.feature-icon svg { width: 16px; height: 16px; }
 
 .feature-item div {
   display: flex;

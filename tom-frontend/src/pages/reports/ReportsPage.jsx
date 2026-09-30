@@ -62,7 +62,7 @@ export default function ReportsPage() {
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-xl">{s.icon}</div>
             <div>
-              <p className="text-2xl font-extrabold font-display text-white">{s.value}</p>
+              <p className="text-2xl font-extrabold font-display text-zinc-950">{s.value}</p>
               <p className="text-xs text-zinc-500">{s.label}</p>
             </div>
           </div>
@@ -72,7 +72,7 @@ export default function ReportsPage() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-5">
-          <h3 className="font-display font-bold text-white text-base mb-1">Monthly Revenue & Net Profit (₹ Lakhs)</h3>
+          <h3 className="font-display font-bold text-zinc-950 text-base mb-1">Monthly Revenue & Net Profit (₹ Lakhs)</h3>
           <p className="text-zinc-500 text-xs mb-4">Financial Year 2026-27 performance</p>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -101,7 +101,7 @@ export default function ReportsPage() {
         </Card>
 
         <Card className="p-5">
-          <h3 className="font-display font-bold text-white text-base mb-1">Production Volumes by Commodity (Tons)</h3>
+          <h3 className="font-display font-bold text-zinc-950 text-base mb-1">Production Volumes by Commodity (Tons)</h3>
           <p className="text-zinc-500 text-xs mb-4">Current quarter output volumes</p>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -136,8 +136,8 @@ export default function ReportsPage() {
             <tbody>
               {productionBreakdown.map(p => (
                 <tr key={p.commodity}>
-                  <td className="font-semibold text-white">{p.commodity}</td>
-                  <td className="text-right font-mono text-zinc-300">{p.productionTons} t</td>
+                  <td className="font-semibold text-zinc-900">{p.commodity}</td>
+                  <td className="text-right font-mono text-zinc-700">{p.productionTons} t</td>
                   <td className="text-right font-mono font-bold text-brand-400">₹{p.revenueLakhs} L</td>
                   <td className="text-right font-mono text-zinc-400">₹{Math.round((p.revenueLakhs * 100000) / p.productionTons).toLocaleString('en-IN')}</td>
                   <td>

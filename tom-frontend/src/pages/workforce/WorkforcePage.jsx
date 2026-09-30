@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Card, CardHeader, Badge, StatusBadge, Modal, FormField, Spinner, EmptyState } from '../../components/ui'
+import { useAuth } from '../../context/AuthContext'
+import { useOperationalData } from '../../context/OperationalDataContext'
 import { authApi } from '../../api/endpoints'
-import { Plus, Search, Users, CheckCircle, XCircle, Clock, Calendar, Check } from 'lucide-react'
+import { Plus, Search, Users, CheckCircle, XCircle, Clock, Calendar, Check, UserPlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const ROLES = ['ADMIN', 'OFFICE_EMPLOYEE', 'FIELD_OFFICER', 'SENIOR_WORKER', 'WORKER', 'TEMP_WORKER', 'SALES']
@@ -20,17 +22,19 @@ const initialAttendance = [
 ]
 
 export default function WorkforcePage() {
+  const { user } = useAuth()
+  const { tempApps, applyTempWorker, approveTempWorker } = useOperationalData()
   const [tab, setTab] = useState('users')
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [roles, setRoles] = useState([])
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [showTempModal, setShowTempModal] = useState(false)
+  const [tempForm, setTempForm] = useState({ name: '', phone: '', role: 'Loading & Yard Worker', dailyWage: 450, nationalId: 'XXXX-XXXX-9812' })
   const [form, setForm] = useState({ username: '', email: '', password: '', fullName: '', phone: '', roleId: '' })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-
-  const [tempApps, setTempApps] = useState(initialTempApps)
   const [attendance, setAttendance] = useState(initialAttendance)
 
   useEffect(() => {
@@ -62,13 +66,22 @@ export default function WorkforcePage() {
   }, [])
 
   const handleApproveTemp = (id, name) => {
-    setTempApps(tempApps.map(a => a.id === id ? { ...a, status: 'APPROVED' } : a))
-    toast.success(`Approved worker badge for ${name}!`)
+    approveTempWorker(id)
   }
 
   const handleRejectTemp = (id, name) => {
-    setTempApps(tempApps.filter(a => a.id !== id))
     toast.error(`Application for ${name} rejected`)
+  }
+
+  const handleCreateTempApp = (e) => {
+    e.preventDefault()
+    if (!tempForm.name || !tempForm.phone) {
+      toast.error('Please enter worker name and phone')
+      return
+    }
+    applyTempWorker(tempForm)
+    setShowTempModal(false)
+    setTempForm({ name: '', phone: '', role: 'Loading & Yard Worker', dailyWage: 450, nationalId: 'XXXX-XXXX-9812' })
   }
 
   const toggleAttendance = (id) => {
@@ -130,17 +143,17 @@ export default function WorkforcePage() {
   }
 
   const roleColor = r => ({
-    ADMIN: 'text-brand-400 bg-brand-500/10', FIELD_OFFICER: 'text-blue-400 bg-blue-500/10',
-    SENIOR_WORKER: 'text-emerald-400 bg-emerald-500/10', WORKER: 'text-zinc-400 bg-surface-3',
-    SALES: 'text-purple-400 bg-purple-500/10', TEMP_WORKER: 'text-amber-400 bg-amber-500/10',
+    ADMIN: 'text-brand-400 bg-brand-500/10', FIELD_OFFICER: 'text-zinc-900 bg-zinc-100 border border-zinc-200',
+    SENIOR_WORKER: 'text-zinc-900 bg-zinc-100 border border-zinc-200', WORKER: 'text-zinc-400 bg-zinc-200',
+    SALES: 'text-zinc-900 bg-zinc-100 border border-zinc-200', TEMP_WORKER: 'text-zinc-900 bg-zinc-100 border border-zinc-200',
     OFFICE_EMPLOYEE: 'text-cyan-400 bg-cyan-500/10',
-  }[r] ?? 'text-zinc-400 bg-surface-3')
+  }[r] ?? 'text-zinc-400 bg-zinc-200')
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title text-2xl font-bold tracking-tight text-white font-display">Workforce Management</h1>
+          <h1 className="page-title text-2xl font-bold tracking-tight text-zinc-950 font-display">Workforce Management</h1>
           <p className="page-sub text-zinc-400 text-sm mt-1">Staff accounts, temporary daily workers, biometric attendance, and payroll</p>
         </div>
         <button className="btn-primary" onClick={() => setShowModal(true)}>
@@ -159,7 +172,7 @@ export default function WorkforcePage() {
           <div key={s.label} className="tom-card p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-xl">{s.icon}</div>
             <div>
-              <p className="text-2xl font-extrabold font-display text-white">{s.value}</p>
+              <p className="text-2xl font-extrabold font-display text-zinc-950">{s.value}</p>
               <p className="text-xs text-zinc-500">{s.label}</p>
             </div>
           </div>
@@ -167,10 +180,10 @@ export default function WorkforcePage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-2 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-zinc-100 p-1 rounded-xl w-fit">
         {['users', 'temp-workers', 'attendance', 'payroll'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-surface-3 text-white' : 'text-zinc-500 hover:text-white'}`}>
+            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${tab === t ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-950'}`}>
             {t.replace('-', ' ')}
           </button>
         ))}
@@ -195,9 +208,9 @@ export default function WorkforcePage() {
                   </thead>
                   <tbody>
                     {filtered.map(u => (
-                      <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                        <td className="font-semibold text-white">{u.fullName}</td>
-                        <td className="font-mono text-xs text-amber-400">@{u.username}</td>
+                      <tr key={u.id} className="hover:bg-zinc-50/80 transition-colors">
+                        <td className="font-semibold text-zinc-900">{u.fullName}</td>
+                        <td className="font-mono text-xs text-zinc-900">@{u.username}</td>
                         <td>
                           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${roleColor(u.role)}`}>
                             {u.role?.replace('_', ' ')}
@@ -231,20 +244,36 @@ export default function WorkforcePage() {
 
       {tab === 'temp-workers' && (
         <Card>
-          <CardHeader title="Temporary Daily Wage Applications" subtitle="Review national ID and assign mill floor badges" action={<Badge variant="warning">{tempApps.filter(a => a.status !== 'APPROVED').length} pending</Badge>} />
+          <CardHeader
+            title="Temporary Daily Wage Applications"
+            subtitle="Review national ID and assign mill floor badges"
+            action={
+              <div className="flex items-center gap-2">
+                <Badge variant="warning">{(tempApps || []).filter(a => a.status !== 'APPROVED').length} pending</Badge>
+                <button
+                  onClick={() => setShowTempModal(true)}
+                  className="btn-primary text-xs px-2.5 py-1"
+                >
+                  <Plus size={13} /> Apply for Badge
+                </button>
+              </div>
+            }
+          />
           <div className="overflow-x-auto">
             <table className="tom-table">
               <thead>
                 <tr><th>Name</th><th>Phone</th><th>Work Type</th><th>Pay Rate</th><th>Applied</th><th>Status</th><th className="text-right">Actions</th></tr>
               </thead>
               <tbody>
-                {tempApps.map(a => (
-                  <tr key={a.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-semibold text-white">{a.name}</td>
-                    <td className="text-zinc-400 text-xs font-mono">{a.phone}</td>
-                    <td>{a.type}</td>
-                    <td className="text-amber-300 font-semibold font-mono">{a.rate}</td>
-                    <td className="text-zinc-500 text-xs">{a.applied}</td>
+                {(tempApps || []).map(a => (
+                  <tr key={a.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-semibold text-zinc-900">{a.name}</td>
+                    <td className="text-zinc-600 text-xs font-mono">{a.phone}</td>
+                    <td className="text-zinc-700">{a.role || a.type}</td>
+                    <td className="text-zinc-950 font-bold font-mono">
+                      {typeof a.dailyWage === 'number' ? `₹${a.dailyWage}/day` : (a.rate || '₹450/day')}
+                    </td>
+                    <td className="text-zinc-500 text-xs">{a.appliedAt || a.applied || 'Today'}</td>
                     <td><StatusBadge status={a.status} /></td>
                     <td className="text-right">
                       {a.status !== 'APPROVED' ? (
@@ -257,7 +286,7 @@ export default function WorkforcePage() {
                           </button>
                         </div>
                       ) : (
-                        <span className="text-xs text-emerald-400 font-semibold flex items-center justify-end gap-1">
+                        <span className="text-xs text-zinc-900 font-semibold flex items-center justify-end gap-1">
                           <Check size={14} /> Active Badge
                         </span>
                       )}
@@ -280,11 +309,11 @@ export default function WorkforcePage() {
               </thead>
               <tbody>
                 {attendance.map(a => (
-                  <tr key={a.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="font-semibold text-white">{a.name}</td>
+                  <tr key={a.id} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="font-semibold text-zinc-900">{a.name}</td>
                     <td className="text-zinc-400 text-xs">{a.role}</td>
                     <td className="text-zinc-400 text-xs">{a.shift}</td>
-                    <td className="font-mono text-zinc-300 text-xs">{a.inTime}</td>
+                    <td className="font-mono text-zinc-700 text-xs">{a.inTime}</td>
                     <td>
                       <Badge variant={a.status === 'PRESENT' ? 'success' : a.status === 'LATE' ? 'warning' : 'danger'}>
                         {a.status}
@@ -309,7 +338,7 @@ export default function WorkforcePage() {
             💰
           </div>
           <div>
-            <h3 className="font-display font-bold text-white text-lg">Workforce Payroll Engine</h3>
+            <h3 className="font-display font-bold text-zinc-950 text-lg">Workforce Payroll Engine</h3>
             <p className="text-zinc-400 text-xs max-w-md mx-auto mt-1">
               Full salary calculations, biometric attendance multipliers, EPF/ESI statutory deductions, and bulk NEFT disbursements.
             </p>
@@ -363,6 +392,67 @@ export default function WorkforcePage() {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* Temp Worker Application Modal */}
+      <Modal open={showTempModal} onClose={() => setShowTempModal(false)} title="Temporary Daily Wage Application">
+        <form onSubmit={handleCreateTempApp} className="space-y-4">
+          <FormField label="Applicant Worker Full Name *">
+            <input
+              required
+              className="tom-input"
+              placeholder="e.g. Rameshwar Naik"
+              value={tempForm.name}
+              onChange={e => setTempForm({ ...tempForm, name: e.target.value })}
+            />
+          </FormField>
+          <div className="grid grid-cols-2 gap-3">
+            <FormField label="Phone Number *">
+              <input
+                required
+                className="tom-input font-mono"
+                placeholder="+91-XXXXX-XXXXX"
+                value={tempForm.phone}
+                onChange={e => setTempForm({ ...tempForm, phone: e.target.value })}
+              />
+            </FormField>
+            <FormField label="National ID / Aadhaar">
+              <input
+                className="tom-input font-mono"
+                placeholder="XXXX-XXXX-XXXX"
+                value={tempForm.nationalId}
+                onChange={e => setTempForm({ ...tempForm, nationalId: e.target.value })}
+              />
+            </FormField>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <FormField label="Job Assignment">
+              <select
+                className="tom-select"
+                value={tempForm.role}
+                onChange={e => setTempForm({ ...tempForm, role: e.target.value })}
+              >
+                <option value="Loading & Yard Worker">Loading & Yard Worker</option>
+                <option value="Seed Cleaning Helper">Seed Cleaning Helper</option>
+                <option value="Stitching & Stacking Hand">Stitching & Stacking Hand</option>
+                <option value="Boiler Shed Support">Boiler Shed Support</option>
+              </select>
+            </FormField>
+            <FormField label="Agreed Daily Wage (₹)">
+              <input
+                required
+                type="number"
+                className="tom-input font-mono"
+                value={tempForm.dailyWage}
+                onChange={e => setTempForm({ ...tempForm, dailyWage: e.target.value })}
+              />
+            </FormField>
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={() => setShowTempModal(false)} className="btn-secondary">Cancel</button>
+            <button type="submit" className="btn-primary">Submit for Admin Approval</button>
+          </div>
+        </form>
       </Modal>
     </div>
   )

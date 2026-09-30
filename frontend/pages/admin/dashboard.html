@@ -15,12 +15,12 @@
   <!-- ===== SIDEBAR ===== -->
   <aside class="sidebar" id="sidebar">
     <a href="dashboard.html" class="sidebar-logo">
-      <div class="sidebar-logo-icon" style="background: #ffffff; padding: 2px; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; width: 36px; height: 36px;">
-        <img src="../../img/logo.png" alt="TOM" style="width: 100%; height: 100%; object-fit: contain;">
+      <div class="sidebar-logo-icon" style="background: #ffffff; border: 1px solid var(--border);">
+        <img src="../../img/logo.png" alt="TOM" style="width: 26px; height: 26px; object-fit: contain;">
       </div>
       <div class="sidebar-logo-text">
-        <strong>TOM System</strong>
-        <span>Admin Portal</span>
+        <strong>TIRUMALA OIL MILL</strong>
+        <span>Console — Admin</span>
       </div>
     </a>
 
@@ -44,6 +44,11 @@
         <a href="#" class="nav-item" id="nav-quality">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           Quality Inspection
+        </a>
+        <a href="http://localhost:5173/floor-operations" class="nav-item" id="nav-floor-tasks" target="_blank">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 18h20"/><path d="M5 18a7 7 0 0 1 14 0"/><path d="M12 4v7"/><path d="M9 11h6"/></svg>
+          Floor Tasks (Senior Worker)
+          <span class="nav-badge" style="background:#09090b;color:#fff;">New</span>
         </a>
         <a href="#" class="nav-item" id="nav-processing">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
@@ -145,64 +150,113 @@
       <!-- ===== DASHBOARD VIEW ===== -->
       <div id="view-dashboard">
         <div class="page-header">
-          <h1 class="page-title">Business Overview</h1>
-          <p class="page-subtitle" id="dashboard-date">Loading...</p>
+          <div class="page-header-title">
+            <h1 class="page-title">Executive Operations</h1>
+            <p class="page-subtitle" id="dashboard-date">Loading...</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary btn-sm" onclick="loadDashboard()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Sync Telemetry
+            </button>
+          </div>
         </div>
 
-        <!-- React App Banner -->
-        <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(16, 185, 129, 0.15)); border: 1px solid rgba(245, 158, 11, 0.3); padding: 14px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
-          <div>
-            <div style="font-weight: 600; color: #fbbf24; font-size: 0.95rem;">🚀 Full React 18 + Tailwind CSS App is Live</div>
-            <div style="color: #a1a1aa; font-size: 0.85rem; margin-top: 2px;">All 14 business modules, interactive charts, and live JPA database workflows are on port 5173.</div>
+        <!-- Console Status Banner -->
+        <div class="console-status-banner">
+          <div class="console-status-left">
+            <div class="console-status-indicator"></div>
+            <div>
+              <span class="console-status-text">Core Operational Engine Active</span>
+              <span class="console-status-sub">— Full React 18 & JPA Business Modules running on Port 5173</span>
+            </div>
           </div>
-          <a href="http://localhost:5173" target="_blank" style="background: #f59e0b; color: #09090b; font-weight: 700; text-decoration: none; padding: 8px 18px; border-radius: 6px; font-size: 0.85rem; white-space: nowrap; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);">
-            Open React App →
+          <a href="http://localhost:5173" target="_blank" class="console-status-link">
+            Launch React Console
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           </a>
         </div>
 
         <!-- KPI Grid -->
         <div class="kpi-grid">
 
-          <div class="kpi-card brand">
-            <div class="kpi-icon">📦</div>
-            <div class="kpi-label">Today's Procurement</div>
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Today's Intake</span>
+              <div class="kpi-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              </div>
+            </div>
             <div class="kpi-value" id="kpi-procurement">—</div>
-            <div class="kpi-sub">kg received today</div>
+            <div class="kpi-sub">
+              <span class="kpi-trend up">+14.2%</span>
+              <span>vs harvest avg</span>
+            </div>
           </div>
 
-          <div class="kpi-card success">
-            <div class="kpi-icon">🏭</div>
-            <div class="kpi-label">Total Stock</div>
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Total Warehouse Stock</span>
+              <div class="kpi-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+            </div>
             <div class="kpi-value" id="kpi-stock">—</div>
-            <div class="kpi-sub">kg across all warehouses</div>
+            <div class="kpi-sub">
+              <span>Across all 3 godowns</span>
+            </div>
           </div>
 
-          <div class="kpi-card info">
-            <div class="kpi-icon">📋</div>
-            <div class="kpi-label">Open Orders</div>
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Open B2B Orders</span>
+              <div class="kpi-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              </div>
+            </div>
             <div class="kpi-value" id="kpi-orders">—</div>
-            <div class="kpi-sub">B2B orders pending</div>
+            <div class="kpi-sub">
+              <span class="badge badge-warning" style="padding: 1px 6px; font-size: 0.68rem;">Pending dispatch</span>
+            </div>
           </div>
 
-          <div class="kpi-card danger">
-            <div class="kpi-icon">💰</div>
-            <div class="kpi-label">Receivables</div>
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Customer Receivables</span>
+              <div class="kpi-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
             <div class="kpi-value" id="kpi-receivables">—</div>
-            <div class="kpi-sub">customer outstanding</div>
+            <div class="kpi-sub">
+              <span>Outstanding credit book</span>
+            </div>
           </div>
 
-          <div class="kpi-card brand">
-            <div class="kpi-icon">🧑‍🤝‍🧑</div>
-            <div class="kpi-label">Active Workers</div>
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Floor Workforce</span>
+              <div class="kpi-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+            </div>
             <div class="kpi-value" id="kpi-workers">—</div>
-            <div class="kpi-sub">on site today</div>
+            <div class="kpi-sub">
+              <span class="badge badge-success" style="padding: 1px 6px; font-size: 0.68rem;">Shift A active</span>
+            </div>
           </div>
 
-          <div class="kpi-card success">
-            <div class="kpi-icon">💳</div>
-            <div class="kpi-label">Cash Balance</div>
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Liquid Cash Balance</span>
+              <div class="kpi-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              </div>
+            </div>
             <div class="kpi-value" id="kpi-cash">—</div>
-            <div class="kpi-sub">across all accounts</div>
+            <div class="kpi-sub">
+              <span>Vault + Bank ledger</span>
+            </div>
           </div>
 
         </div>
@@ -213,14 +267,19 @@
           <!-- Active Reservations -->
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title">⏰ Active Reservations</h2>
+              <h2 class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Active Reservations
+              </h2>
               <span class="badge badge-warning" id="reservation-count">0 active</span>
             </div>
             <div class="card-body" id="reservations-table">
               <div class="empty-state">
-                <span class="empty-icon">📋</span>
+                <div class="empty-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
                 <p>No active reservations</p>
-                <span>Procurement reservations will appear here</span>
+                <span>12-hour procurement holds will appear here</span>
               </div>
             </div>
           </div>
@@ -228,29 +287,36 @@
           <!-- Pending Approvals -->
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title">✅ Pending Approvals</h2>
+              <h2 class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Pending Authority Reviews
+              </h2>
               <span class="badge badge-danger" id="approvals-count">0 pending</span>
             </div>
             <div class="card-body" id="approvals-list">
               <div class="approval-item">
-                <div class="approval-icon">👤</div>
+                <div class="approval-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
                 <div class="approval-info">
-                  <strong>Temp Worker Application</strong>
-                  <span>Raju Sharma — Loading worker</span>
+                  <strong>Temporary Loading Worker</strong>
+                  <span>Raju Sharma — Daily wage loading squad</span>
                 </div>
                 <div class="approval-actions">
                   <button class="btn btn-sm btn-primary" onclick="handleApproval(this, 'Temp Worker', 1)">Approve</button>
-                  <button class="btn btn-sm btn-secondary" onclick="handleApproval(this, 'Review', 1)">Review</button>
+                  <button class="btn btn-sm btn-secondary" onclick="handleApproval(this, 'Review', 1)">Inspect</button>
                 </div>
               </div>
               <div class="approval-item">
-                <div class="approval-icon">💸</div>
+                <div class="approval-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
                 <div class="approval-info">
-                  <strong>Payment Collection</strong>
-                  <span>₹45,000 — Sales: Kumar Traders</span>
+                  <strong>Field Cash Collection</strong>
+                  <span>₹45,000 — Suresh Kumar (Kumar Traders)</span>
                 </div>
                 <div class="approval-actions">
-                  <button class="btn btn-sm btn-primary" onclick="handleApproval(this, 'Payment', 2)">Verify</button>
+                  <button class="btn btn-sm btn-primary" onclick="handleApproval(this, 'Payment', 2)">Verify Physical Cash</button>
                 </div>
               </div>
             </div>
@@ -259,22 +325,25 @@
         </div>
 
         <!-- Inventory Summary -->
-        <div class="card" style="margin-top: var(--gap-lg)">
+        <div class="card" style="margin-top: 16px;">
           <div class="card-header">
-            <h2 class="card-title">🏭 Inventory Summary</h2>
-            <button class="btn btn-sm btn-secondary" onclick="window.location.href='http://localhost:5173/inventory'">View All (Full Module) →</button>
+            <h2 class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              Warehouse Inventory Breakdown
+            </h2>
+            <button class="btn btn-sm btn-secondary" onclick="window.location.href='http://localhost:5173/inventory'">Full Inventory Cockpit →</button>
           </div>
           <div class="table-wrapper">
             <table>
               <thead>
                 <tr>
-                  <th>Commodity</th>
+                  <th>Commodity & Batch</th>
                   <th>Grade</th>
-                  <th>Warehouse</th>
-                  <th>Bags</th>
+                  <th>Storage Godown</th>
+                  <th>Counted Bags</th>
                   <th>Weight (kg)</th>
-                  <th>Effective Cost/kg</th>
-                  <th>Status</th>
+                  <th>Cost Basis</th>
+                  <th>Inventory Status</th>
                 </tr>
               </thead>
               <tbody id="inventory-table">
@@ -282,7 +351,7 @@
                   <td colspan="7">
                     <div class="table-loading">
                       <div class="spinner"></div>
-                      <span>Loading inventory...</span>
+                      <span>Querying warehouse ledger...</span>
                     </div>
                   </td>
                 </tr>
@@ -291,52 +360,61 @@
           </div>
         </div>
 
-        <!-- Supplier Payments Due -->
-        <div class="dashboard-grid" style="margin-top: var(--gap-lg)">
+        <!-- Supplier Payments Due & Activity -->
+        <div class="dashboard-grid" style="margin-top: 16px;">
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title">🏦 Supplier Payments Due</h2>
-              <button class="btn btn-sm btn-secondary" onclick="window.location.href='http://localhost:5173/finance'">View All (Finance) →</button>
+              <h2 class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Supplier Accounts Payable
+              </h2>
+              <button class="btn btn-sm btn-secondary" onclick="window.location.href='http://localhost:5173/finance'">Finance Portal →</button>
             </div>
             <div class="card-body" id="supplier-payments">
               <div class="empty-state">
-                <span class="empty-icon">💰</span>
-                <p>No pending supplier payments</p>
+                <div class="empty-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                </div>
+                <p>No overdue supplier payables</p>
+                <span>Approved procurement disbursements will appear here</span>
               </div>
             </div>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title">📊 Recent Activity</h2>
+              <h2 class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Immutable Audit Trail
+              </h2>
             </div>
             <div class="card-body">
               <div class="activity-feed" id="activity-feed">
                 <div class="activity-item">
                   <div class="activity-dot brand"></div>
                   <div class="activity-info">
-                    <span>Procurement requirement created</span>
+                    <span>Procurement lot registered: Raw Cotton Seed (10,000 kg)</span>
                     <time>Just now</time>
                   </div>
                 </div>
                 <div class="activity-item">
                   <div class="activity-dot success"></div>
                   <div class="activity-info">
-                    <span>Stock accepted: Turmeric Grade A — 500 kg</span>
+                    <span>Stock verified into Godown 1: Turmeric Grade A — 500 kg</span>
                     <time>2 min ago</time>
                   </div>
                 </div>
                 <div class="activity-item">
                   <div class="activity-dot info"></div>
                   <div class="activity-info">
-                    <span>B2B order confirmed: Kumar Traders</span>
+                    <span>B2B wholesale order confirmed: Kumar Traders</span>
                     <time>15 min ago</time>
                   </div>
                 </div>
                 <div class="activity-item">
                   <div class="activity-dot warning"></div>
                   <div class="activity-info">
-                    <span>Reservation expiring in 1 hour: Maize — 1000 kg</span>
+                    <span>12-hour reservation expiring: Maize Lot #2026-004</span>
                     <time>18 min ago</time>
                   </div>
                 </div>

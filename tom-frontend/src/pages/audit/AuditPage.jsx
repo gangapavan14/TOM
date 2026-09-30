@@ -58,13 +58,13 @@ export default function AuditPage() {
                 <tr key={l.id}>
                   <td className="font-mono text-xs text-zinc-500">{l.id}</td>
                   <td>
-                    <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface-3 text-brand-300">
+                    <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-zinc-200 text-brand-300">
                       {l.action}
                     </span>
                   </td>
-                  <td className="font-semibold text-white">{l.user}</td>
+                  <td className="font-semibold text-zinc-900">{l.user}</td>
                   <td className="font-mono text-xs text-zinc-500">{l.ip}</td>
-                  <td className="text-zinc-300 text-xs">{l.details}</td>
+                  <td className="text-zinc-700 text-xs">{l.details}</td>
                   <td>
                     <Badge variant={l.status === 'SUCCESS' ? 'success' : 'danger'}>
                       {l.status}

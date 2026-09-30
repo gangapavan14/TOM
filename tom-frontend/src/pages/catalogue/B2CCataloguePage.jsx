@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { Card, Badge, Modal, FormField } from '../../components/ui'
-import { ShoppingBag, Star, ShieldCheck, Phone, Mail, Check, Info, ArrowRight, Sparkles, Filter } from 'lucide-react'
+import {
+  ShoppingBag, Star, ShieldCheck, Phone, Mail, Check, Info,
+  ArrowRight, Sparkles, Filter, Droplets, Layers, Sun, Wheat, Package
+} from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const products = [
@@ -11,7 +14,7 @@ const products = [
     category: 'Cooking Oils',
     rating: 4.9,
     reviews: 142,
-    image: '🌿',
+    icon: <Droplets className="w-7 h-7 text-zinc-950" />,
     packs: [
       { size: '1 Litre Pouch', price: 145, mrp: 165 },
       { size: '5 Litre Jar', price: 690, mrp: 790 },
@@ -33,7 +36,7 @@ const products = [
     category: 'Commercial Oils',
     rating: 4.8,
     reviews: 98,
-    image: '🛢️',
+    icon: <Layers className="w-7 h-7 text-zinc-950" />,
     packs: [
       { size: '15 Litre Square Tin', price: 1890, mrp: 2150 },
       { size: '15 Kg Commercial Pack', price: 1940, mrp: 2200 },
@@ -54,7 +57,7 @@ const products = [
     category: 'Cooking Oils',
     rating: 4.9,
     reviews: 76,
-    image: '🌻',
+    icon: <Sun className="w-7 h-7 text-zinc-950" />,
     packs: [
       { size: '1 Litre Pouch', price: 155, mrp: 175 },
       { size: '5 Litre Canister', price: 740, mrp: 840 },
@@ -76,7 +79,7 @@ const products = [
     category: 'Animal Feed / By-products',
     rating: 5.0,
     reviews: 215,
-    image: '🌾',
+    icon: <Wheat className="w-7 h-7 text-zinc-950" />,
     packs: [
       { size: '50 Kg Heavy Jute Bag', price: 1550, mrp: 1700 },
       { size: '1 Metric Ton (20 Bags)', price: 30500, mrp: 33000 },
@@ -97,7 +100,7 @@ const products = [
     category: 'Spices & Agri Produce',
     rating: 4.9,
     reviews: 84,
-    image: '✨',
+    icon: <Sparkles className="w-7 h-7 text-zinc-950" />,
     packs: [
       { size: '500g Moisture-Lock Pouch', price: 130, mrp: 150 },
       { size: '1 Kg Vacuum Pack', price: 250, mrp: 290 },
@@ -119,7 +122,7 @@ const products = [
     category: 'Cooking Oils',
     rating: 4.8,
     reviews: 52,
-    image: '🌱',
+    icon: <Package className="w-7 h-7 text-zinc-950" />,
     packs: [
       { size: '1 Litre Glass Bottle', price: 320, mrp: 360 },
       { size: '5 Litre Jar', price: 1520, mrp: 1750 },
@@ -175,73 +178,76 @@ export default function B2CCataloguePage() {
   return (
     <div className="space-y-8 animate-fade-in">
 
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950/60 via-surface-1 to-emerald-950/40 border border-amber-500/20 p-8">
+      {/* Header Banner — Pristine Monochrome Console Card */}
+      <div className="relative overflow-hidden rounded-2xl bg-white border border-zinc-200 p-8 shadow-sm">
         <div className="max-w-2xl space-y-3 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold">
-            <Sparkles size={14} /> Direct from Mill Floor — Tirumala Oil Mill Products
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-950 text-xs font-bold uppercase tracking-wider">
+            <Sparkles size={14} className="text-zinc-950" /> Direct from Mill Floor — Tirumala Oil Mill Products
           </div>
-          <h1 className="text-3xl lg:text-4xl font-extrabold text-white font-display tracking-tight leading-tight">
+          <h1 className="text-3xl lg:text-4xl font-extrabold text-zinc-950 font-sans tracking-tight leading-tight">
             Wholesale & Retail Product Showcase
           </h1>
-          <p className="text-zinc-300 text-sm leading-relaxed">
-            Freshly crushed edible oils, unadulterated high-protein cattle cake, and graded Nizamabad turmeric. V1 provides direct-from-mill booking with transparent lab specifications.
+          <p className="text-zinc-700 text-sm leading-relaxed">
+            Freshly crushed edible oils, unadulterated high-protein cattle cake, and graded Nizamabad turmeric. Direct-from-mill booking with transparent lab specifications.
           </p>
-          <div className="flex flex-wrap gap-4 pt-2 text-xs text-zinc-400">
-            <span className="flex items-center gap-1.5"><ShieldCheck size={16} className="text-emerald-400" /> FSSAI Certified (#10123000000456)</span>
-            <span className="flex items-center gap-1.5"><Check size={16} className="text-amber-400" /> 100% Single-Source Crushing</span>
-            <span className="flex items-center gap-1.5"><Info size={16} className="text-blue-400" /> Direct Mill Dispatches</span>
+          <div className="flex flex-wrap gap-4 pt-2 text-xs text-zinc-600 font-medium">
+            <span className="flex items-center gap-1.5"><ShieldCheck size={16} className="text-zinc-950" /> FSSAI Certified (#10123000000456)</span>
+            <span className="flex items-center gap-1.5"><Check size={16} className="text-zinc-950" /> 100% Single-Source Crushing</span>
+            <span className="flex items-center gap-1.5"><Info size={16} className="text-zinc-950" /> Direct Mill Dispatches</span>
           </div>
         </div>
       </div>
 
-      {/* Category Pills */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              selectedCategory === cat
-                ? 'bg-amber-500 text-black font-bold shadow-lg shadow-amber-500/20'
-                : 'bg-surface-2 text-zinc-400 hover:text-white hover:bg-surface-3'
-            }`}
-          >
-            {cat === 'ALL' ? 'All Mill Products' : cat}
-          </button>
-        ))}
+      {/* Subcategory Filter Pills — High Contrast Black & White */}
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-zinc-950 uppercase tracking-wider">Product Categories</p>
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+                selectedCategory === cat
+                  ? 'bg-zinc-950 text-white font-bold shadow-sm'
+                  : 'bg-white border border-zinc-200 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 hover:border-zinc-300'
+              }`}
+            >
+              {cat === 'ALL' ? 'All Mill Products' : cat}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Product Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {filtered.map(p => (
-          <Card key={p.id} className="p-6 flex flex-col justify-between hover:border-amber-500/30 transition-all group">
+          <Card key={p.id} className="p-6 flex flex-col justify-between hover:border-zinc-400 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
             <div className="space-y-4">
               <div className="flex items-start justify-between">
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-3xl group-hover:scale-105 transition-transform">
-                  {p.image}
+                <div className="w-14 h-14 rounded-2xl bg-zinc-100 border border-zinc-200 flex items-center justify-center group-hover:scale-105 group-hover:bg-zinc-950 group-hover:text-white transition-all duration-200 shadow-sm">
+                  {p.icon}
                 </div>
                 <div className="text-right">
-                  <span className="text-[11px] font-mono text-zinc-500">{p.id}</span>
-                  <div className="flex items-center gap-1 text-amber-400 text-xs mt-0.5">
+                  <span className="text-[11px] font-mono text-zinc-500 font-bold">{p.id}</span>
+                  <div className="flex items-center gap-1 text-zinc-950 text-xs mt-0.5 justify-end">
                     <Star size={12} fill="currentColor" />
                     <span className="font-bold">{p.rating}</span>
-                    <span className="text-zinc-500">({p.reviews})</span>
+                    <span className="text-zinc-500 font-mono">({p.reviews})</span>
                   </div>
                 </div>
               </div>
 
               <div>
-                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">{p.category}</span>
-                <h3 className="font-display font-bold text-white text-lg mt-0.5 leading-snug">{p.name}</h3>
-                <p className="text-zinc-400 text-xs mt-1.5 leading-relaxed">{p.tagline}</p>
+                <span className="text-xs font-bold text-zinc-950 uppercase tracking-wider">{p.category}</span>
+                <h3 className="font-sans font-bold text-zinc-950 text-lg mt-0.5 leading-snug">{p.name}</h3>
+                <p className="text-zinc-600 text-xs mt-1.5 leading-relaxed">{p.tagline}</p>
               </div>
 
               {/* Bullet features */}
-              <div className="space-y-1.5 py-2 border-y border-white/5">
+              <div className="space-y-1.5 py-2 border-y border-zinc-200">
                 {p.features.map(f => (
-                  <div key={f} className="flex items-center gap-2 text-xs text-zinc-300">
-                    <Check size={13} className="text-emerald-400 flex-shrink-0" />
+                  <div key={f} className="flex items-center gap-2 text-xs text-zinc-700 font-medium">
+                    <Check size={13} className="text-zinc-950 flex-shrink-0" />
                     <span>{f}</span>
                   </div>
                 ))}
@@ -249,19 +255,19 @@ export default function B2CCataloguePage() {
 
               {/* Pack Sizes & Pricing */}
               <div>
-                <p className="text-[11px] uppercase tracking-wider font-semibold text-zinc-500 mb-2">Available Pack Sizes</p>
+                <p className="text-xs uppercase tracking-wider font-bold text-zinc-950 mb-2">Available Pack Sizes</p>
                 <div className="space-y-2">
                   {p.packs.map(pk => (
-                    <div key={pk.size} className="flex items-center justify-between p-2.5 bg-surface-2/80 rounded-xl border border-white/5 text-xs">
+                    <div key={pk.size} className="flex items-center justify-between p-2.5 bg-zinc-50 rounded-xl border border-zinc-200 text-xs hover:border-zinc-300 transition-colors">
                       <div>
-                        <span className="font-medium text-white">{pk.size}</span>
-                        <div className="text-[11px] text-zinc-500 line-through">MRP: ₹{pk.mrp}</div>
+                        <span className="font-semibold text-zinc-950">{pk.size}</span>
+                        <div className="text-[11px] text-zinc-500 line-through font-mono">MRP: ₹{pk.mrp}</div>
                       </div>
                       <div className="text-right">
-                        <span className="font-display font-bold text-amber-300 text-sm">₹{pk.price}</span>
+                        <span className="font-mono font-bold text-zinc-950 text-sm">₹{pk.price}</span>
                         <button
                           onClick={() => openEnquiry(p, pk.size)}
-                          className="block text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 mt-0.5"
+                          className="block text-[11px] font-bold text-zinc-950 hover:underline mt-0.5 cursor-pointer"
                         >
                           Book Direct →
                         </button>
@@ -273,16 +279,16 @@ export default function B2CCataloguePage() {
             </div>
 
             {/* Bottom Actions */}
-            <div className="pt-5 mt-4 border-t border-white/5 flex gap-2">
+            <div className="pt-5 mt-4 border-t border-zinc-200 flex gap-2">
               <button
                 onClick={() => setSelectedProduct(p)}
-                className="btn-secondary flex-1 text-xs justify-center py-2"
+                className="btn-secondary flex-1 text-xs justify-center py-2 shadow-sm"
               >
                 Lab Specs
               </button>
               <button
                 onClick={() => openEnquiry(p, p.packs[0]?.size)}
-                className="btn-primary flex-1 text-xs justify-center py-2"
+                className="btn-primary flex-1 text-xs justify-center py-2 shadow-sm"
               >
                 Inquire / Quote
               </button>
@@ -298,22 +304,22 @@ export default function B2CCataloguePage() {
         title={`Certified Lab Specifications — ${selectedProduct?.name}`}
       >
         <div className="space-y-4">
-          <div className="p-3 bg-surface-3 rounded-xl flex items-center justify-between text-xs">
-            <span className="text-zinc-400">FSSAI License:</span>
-            <span className="font-mono text-emerald-400 font-bold">{selectedProduct?.fssai}</span>
+          <div className="p-3 bg-zinc-100 border border-zinc-200 rounded-xl flex items-center justify-between text-xs">
+            <span className="text-zinc-600 font-semibold">FSSAI License:</span>
+            <span className="font-mono text-zinc-950 font-bold">{selectedProduct?.fssai}</span>
           </div>
 
           <div className="space-y-2 text-xs">
             {selectedProduct?.specs && Object.entries(selectedProduct.specs).map(([k, v]) => (
-              <div key={k} className="flex justify-between p-2.5 bg-surface-2 rounded-lg border border-white/5">
-                <span className="text-zinc-400 capitalize">{k.replace(/([A-Z])/g, ' $1')}:</span>
-                <span className="font-mono text-white font-semibold">{v}</span>
+              <div key={k} className="flex justify-between p-2.5 bg-zinc-50 rounded-lg border border-zinc-200">
+                <span className="text-zinc-600 font-medium capitalize">{k.replace(/([A-Z])/g, ' $1')}:</span>
+                <span className="font-mono text-zinc-950 font-bold">{v}</span>
               </div>
             ))}
           </div>
 
-          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300 flex items-start gap-2">
-            <Info size={15} className="flex-shrink-0 mt-0.5" />
+          <div className="p-3 bg-zinc-100 border border-zinc-200 rounded-xl text-xs text-zinc-800 flex items-start gap-2">
+            <Info size={15} className="flex-shrink-0 mt-0.5 text-zinc-950" />
             <span>Every batch undergoes laboratory testing for FFA, moisture, and purity before leaving the mill premises.</span>
           </div>
 
@@ -330,8 +336,8 @@ export default function B2CCataloguePage() {
         title="Direct Mill Booking & Wholesale Quote"
       >
         <form onSubmit={handleEnquirySubmit} className="space-y-4">
-          <div className="p-3 bg-surface-3 rounded-xl text-xs text-zinc-300">
-            <strong>Selected Item:</strong> <span className="text-amber-400 font-semibold">{enquiryForm.product}</span>
+          <div className="p-3 bg-zinc-100 border border-zinc-200 rounded-xl text-xs text-zinc-800">
+            <strong>Selected Item:</strong> <span className="text-zinc-950 font-bold">{enquiryForm.product}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
